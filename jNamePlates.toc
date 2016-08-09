@@ -1,6 +1,6 @@
 ## Interface: 70000
 ## Title: jNamePlates
-## Notes: Tweaks including but not limited to: coloring of name plate of unit targeting us
+## Notes: Color the name plate of unit targeting us
 ## Version: 1.0
 ## Author: jwldnr
 
