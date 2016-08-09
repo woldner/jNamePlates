@@ -79,3 +79,6 @@ function Addon:UpdateHealthColor(frame)
     end
   end
 end
+
+-- call
+Addon:Load();
