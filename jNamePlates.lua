@@ -72,7 +72,7 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateMaxScale', 1);
     SetCVar('nameplateMinScale', 1);
 
-    -- Always show names on nameplates
+    -- always show names on nameplates
     for _, x in pairs({
         'Friendly',
         'Enemy'
