@@ -42,8 +42,7 @@ function Addon:PLAYER_LOGIN()
   self:HookActionEvents();
 end
 
--- configuration
--- credits to Ketho
+-- configuration (credits to Ketho)
 function Addon:ConfigNamePlates()
   if (not InCombatLockdown()) then
     -- set distance back to 40 (down from 60)
