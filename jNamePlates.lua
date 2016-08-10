@@ -1,4 +1,4 @@
--- locals
+-- locals and speed
 local AddonName, Addon = ...;
 
 local _G = _G;
