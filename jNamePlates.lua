@@ -1,6 +1,8 @@
 -- locals
 local AddonName, Addon = ...;
 
+local select = select;
+
 -- helper functions
 local function IsTanking(unit)
   return select(1, UnitDetailedThreatSituation('player', unit));
