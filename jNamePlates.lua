@@ -61,7 +61,7 @@ function Addon:ConfigNamePlates()
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
     -- set the selected border color on nameplates
-    -- DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1.0, 0.0, 0.0, 1.0);
 
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
@@ -70,6 +70,19 @@ function Addon:ConfigNamePlates()
     -- Prevent nameplates from getting smaller when you move away
     SetCVar('nameplateMaxScale', 1);
     SetCVar('nameplateMinScale', 1);
+
+    -- Always show names on nameplates
+    for _, x in pairs({
+        'Friendly',
+        'Enemy'
+      }) do
+      for _, y in pairs({
+          'displayNameWhenSelected',
+          'displayNameByPlayerNameRules'
+        }) do
+        _G['DefaultCompactNamePlate'..x..'FrameOptions'][y] = false;
+      end
+    end
   end
 end
 
@@ -106,7 +119,7 @@ function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
 
   -- create a border from template just like the one around the health bar
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
-  -- frame.castBar.border:SetVertexColor(0.0, 0.0, 0.0, 0.8);
+  frame.castBar.border:SetVertexColor(0.0, 0.0, 0.0, 0.8);
 end
 
 function Addon:UpdateHealthColor(frame)
