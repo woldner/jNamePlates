@@ -1,6 +1,8 @@
 -- locals
 local AddonName, Addon = ...;
 
+local _G = _G;
+local pairs = pairs;
 local select = select;
 
 -- helper functions
