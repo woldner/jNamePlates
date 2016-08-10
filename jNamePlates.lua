@@ -126,15 +126,15 @@ function Addon:UpdateName(frame)
     local level = UnitLevel(frame.unit);
     if (level == -1) then
       if (InCombat(frame.unit)) then
-        frame.name:SetText(GetUnitName(frame.unit, true) .. '* (??)');
+        frame.name:SetText(GetUnitName(frame.unit, true)..'* (??)');
       else
-        frame.name:SetText(GetUnitName(frame.unit, true) .. ' (??)');
+        frame.name:SetText(GetUnitName(frame.unit, true)..' (??)');
       end
     else
       if (InCombat(frame.unit)) then
-        frame.name:SetText(GetUnitName(frame.unit, true) .. '* (' .. UnitLevel(frame.unit) .. ')');
+        frame.name:SetText(GetUnitName(frame.unit, true)..'* ('.. UnitLevel(frame.unit)..')');
       else
-        frame.name:SetText(GetUnitName(frame.unit, true) .. ' (' .. UnitLevel(frame.unit) .. ')');
+        frame.name:SetText(GetUnitName(frame.unit, true)..' ('.. UnitLevel(frame.unit)..')');
       end
     end
 
