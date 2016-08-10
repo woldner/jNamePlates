@@ -57,6 +57,12 @@ function Addon:ConfigNamePlates()
     -- override any enabled cvar
     DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true;
 
+    -- disable the classification indicator on nameplates
+    DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
+
+    -- set the selected border color on nameplates
+    -- DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
     SetCVar('nameplateMinAlpha', 1);
@@ -100,11 +106,6 @@ function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
 
   -- create a border from template just like the one around the health bar
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
-
-  -- disable the classification indicator if enabled
-  if (frame.optionTable.showClassificationIndicator) then
-    frame.optionTable.showClassificationIndicator = false;
-  end
 end
 
 function Addon:UpdateHealthColor(frame)
