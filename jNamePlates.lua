@@ -109,11 +109,12 @@ do
 end
 
 function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
-  -- set bar color and textures for health- and cast bar
+  -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
   frame.healthBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
+  -- and cast bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
   frame.castBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
