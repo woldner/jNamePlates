@@ -106,6 +106,7 @@ function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
 
   -- create a border from template just like the one around the health bar
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
+  -- frame.castBar.border:SetVertexColor(0.0, 0.0, 0.0, 0.8);
 end
 
 function Addon:UpdateHealthColor(frame)
@@ -138,13 +139,19 @@ function Addon:UpdateName(frame)
     end
 
     if (UnitGUID('target') == nil) then
-      frame.healthBar:SetAlpha(1);
+      frame.healthBar:SetAlpha(1.0);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
         frame.healthBar:SetAlpha(0.5);
         nameplate.UnitFrame.healthBar:SetAlpha(1.0);
       end
+    end
+
+    if (IsTanking(frame.unit)) then
+      frame.name:SetVertexColor(1.0, 0.0, 0.0);
+    else
+      frame.name:SetVertexColor(1.0, 1.0, 1.0);
     end
   end
 end
