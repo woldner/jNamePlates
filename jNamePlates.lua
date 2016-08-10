@@ -6,6 +6,10 @@ local function IsTanking(unit)
   return select(1, UnitDetailedThreatSituation('player', unit));
 end
 
+local function InCombat(unit)
+  return (UnitAffectingCombat(unit) and UnitCanAttack('player', unit));
+end
+
 -- main
 function Addon:Load()
   do
@@ -30,7 +34,35 @@ function Addon:OnEvent(event, ...)
 end
 
 function Addon:PLAYER_LOGIN()
+  self:ConfigNamePlates();
   self:HookActionEvents();
+end
+
+-- configuration
+-- credits to Ketho
+function Addon:ConfigNamePlates()
+  if (not InCombatLockdown()) then
+    -- set distance back to 40 (down from 60)
+    SetCVar('nameplateMaxDistance', 40);
+
+    -- stop nameplates from clamping to screen
+    SetCVar('nameplateOtherTopInset', -1);
+    SetCVar('nameplateOtherBottomInset', -1);
+
+    -- show class color on health bar for hostile opposite faction characters
+    SetCVar('ShowClassColorInNameplate', 1);
+
+    -- override any enabled cvar
+    DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true;
+
+    -- prevent nameplates from fading when you move away
+    SetCVar('nameplateMaxAlpha', 1);
+    SetCVar('nameplateMinAlpha', 1);
+
+    -- Prevent nameplates from getting smaller when you move away
+    SetCVar('nameplateMaxScale', 1);
+    SetCVar('nameplateMinScale', 1);
+  end
 end
 
 -- hooks
@@ -43,20 +75,25 @@ do
     Addon:UpdateHealthColor(frame);
   end
 
+  local function Frame_UpdateName(frame)
+    Addon:UpdateName(frame);
+  end
+
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlate);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
+    hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
   end
 end
 
 function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
   -- set bar color and textures for health- and cast bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.healthBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.2);
+  frame.healthBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.castBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.2);
+  frame.castBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
@@ -69,13 +106,42 @@ function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
 end
 
 function Addon:UpdateHealthColor(frame)
-  if (UnitExists(frame.unit) and frame.isTanking or IsTanking(frame.displayedUnit)) then
+  if (UnitExists(frame.unit) and frame.isTanking or IsTanking(frame.unit)) then
     -- color of name plate of unit targeting us
     local r, g, b = 1.0, 0.0, 1.0;
 
     if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
       frame.healthBar:SetStatusBarColor(r, g, b);
       frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
+    end
+  end
+end
+
+function Addon:UpdateName(frame)
+  if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
+    local level = UnitLevel(frame.unit);
+    if (level == -1) then
+      if (InCombat(frame.unit)) then
+        frame.name:SetText(GetUnitName(frame.unit, true) .. '* (??)');
+      else
+        frame.name:SetText(GetUnitName(frame.unit, true) .. ' (??)');
+      end
+    else
+      if (InCombat(frame.unit)) then
+        frame.name:SetText(GetUnitName(frame.unit, true) .. '* (' .. UnitLevel(frame.unit) .. ')');
+      else
+        frame.name:SetText(GetUnitName(frame.unit, true) .. ' (' .. UnitLevel(frame.unit) .. ')');
+      end
+    end
+
+    if (UnitGUID('target') == nil) then
+      frame.healthBar:SetAlpha(1);
+    else
+      local nameplate = C_NamePlate.GetNamePlateForUnit('target');
+      if (nameplate) then
+        frame.healthBar:SetAlpha(0.5);
+        nameplate.UnitFrame.healthBar:SetAlpha(1.0);
+      end
     end
   end
 end
