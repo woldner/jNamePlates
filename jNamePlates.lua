@@ -57,14 +57,18 @@ function Addon:ConfigNamePlates()
 
     -- override any enabled cvar
     C_Timer.After(.1, function ()
+        -- enable class colors on enemy nameplates
         DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true;
+
+        -- disable the classification indicator on nameplates
+        DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
+
+        -- set the selected border color on enemy nameplates
+        DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+
+        -- set the selected border color on friendly nameplates
+        DefaultCompactNamePlateFriendFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
       end)
-
-    -- disable the classification indicator on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
-
-    -- set the selected border color on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 0, 0, 1);
 
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
