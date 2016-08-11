@@ -70,8 +70,8 @@ function Addon:ConfigNamePlates()
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
     -- set the selected border color on nameplates
-    -- DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
-    -- DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
+    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
+    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
 
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
@@ -150,14 +150,6 @@ function Addon:UpdateHealthColor(frame)
 end
 
 function Addon:UpdateHealthBorder(frame)
-  if (UnitIsUnit(frame.displayedUnit, 'target')) then
-    local r, g, b = frame.healthBar.r, frame.healthBar.g, frame.healthBar.b;
-
-    if (r ~= frame.healthBar.border.r or g ~= frame.healthBar.border.g or b ~= frame.healthBar.border.b) then
-      frame.healthBar.border:SetVertexColor(r, g, b, 1);
-    end
-  end
-
   if (frame.castBar and frame.castBar.border) then
     -- color of nameplate castbar border
     local r, g, b, a = 0, 0, 0, 1;
