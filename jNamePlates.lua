@@ -55,6 +55,14 @@ function Addon:ConfigNamePlates()
     -- show class color on health bar for hostile opposite faction characters
     SetCVar('ShowClassColorInNameplate', 1);
 
+    -- prevent nameplates from fading when you move away
+    SetCVar('nameplateMaxAlpha', 1);
+    SetCVar('nameplateMinAlpha', 1);
+
+    -- Prevent nameplates from getting smaller when you move away
+    SetCVar('nameplateMaxScale', 1);
+    SetCVar('nameplateMinScale', 1);
+
     -- override any enabled cvar
     C_Timer.After(.1, function ()
         -- enable class colors on enemy nameplates
@@ -69,14 +77,6 @@ function Addon:ConfigNamePlates()
         -- set the selected border color on friendly nameplates
         DefaultCompactNamePlateFriendFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
       end)
-
-    -- prevent nameplates from fading when you move away
-    SetCVar('nameplateMaxAlpha', 1);
-    SetCVar('nameplateMinAlpha', 1);
-
-    -- Prevent nameplates from getting smaller when you move away
-    SetCVar('nameplateMaxScale', 1);
-    SetCVar('nameplateMinScale', 1);
 
     -- always show names on nameplates
     for _, x in pairs({
