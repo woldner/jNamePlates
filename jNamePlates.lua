@@ -50,50 +50,53 @@ end
 
 -- configuration (partial credits to Ketho)
 function Addon:ConfigNamePlates()
-  if (not InCombatLockdown()) then
-    -- set distance back to 40 (down from 60)
-    SetCVar('nameplateMaxDistance', 40);
+  -- enemy nameplate healthbar hostile colors
+  SetCVar('ShowClassColorInNameplate', 0);
 
-    -- stop nameplates from clamping to screen
-    SetCVar('nameplateOtherTopInset', -1);
-    SetCVar('nameplateOtherBottomInset', -1);
+  C_Timer.After(.1, function()
+      if (not InCombatLockdown()) then
+        -- set distance back to 40 (down from 60)
+        SetCVar('nameplateMaxDistance', 40);
 
-    -- friendly nameplate healthbar class colors
-    DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true;
+        -- stop nameplates from clamping to screen
+        SetCVar('nameplateOtherTopInset', -1);
+        SetCVar('nameplateOtherBottomInset', -1);
 
-    -- enemy nameplate healthbar hostile colors
-    SetCVar('ShowClassColorInNameplate', 0);
-    -- override any enabled cvar
-    DefaultCompactNamePlateEnemyFrameOptions.useClassColors = false;
+        -- friendly nameplate healthbar class colors
+        DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true;
 
-    -- disable the classification indicator on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
+        -- override any enabled cvar
+        DefaultCompactNamePlateEnemyFrameOptions.useClassColors = false;
 
-    -- set the selected border color on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
-    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
+        -- disable the classification indicator on nameplates
+        DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
-    -- prevent nameplates from fading when you move away
-    SetCVar('nameplateMaxAlpha', 1);
-    SetCVar('nameplateMinAlpha', 1);
+        -- set the selected border color on nameplates
+        DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+        DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
 
-    -- Prevent nameplates from getting smaller when you move away
-    SetCVar('nameplateMaxScale', 1);
-    SetCVar('nameplateMinScale', 1);
+        -- prevent nameplates from fading when you move away
+        SetCVar('nameplateMaxAlpha', 1);
+        SetCVar('nameplateMinAlpha', 1);
 
-    -- always show names on nameplates
-    for _, x in pairs({
-        'Friendly',
-        'Enemy'
-      }) do
-      for _, y in pairs({
-          'displayNameWhenSelected',
-          'displayNameByPlayerNameRules'
-        }) do
-        _G['DefaultCompactNamePlate'..x..'FrameOptions'][y] = false;
+        -- Prevent nameplates from getting smaller when you move away
+        SetCVar('nameplateMaxScale', 1);
+        SetCVar('nameplateMinScale', 1);
+
+        -- always show names on nameplates
+        for _, x in pairs({
+            'Friendly',
+            'Enemy'
+          }) do
+          for _, y in pairs({
+              'displayNameWhenSelected',
+              'displayNameByPlayerNameRules'
+            }) do
+            _G['DefaultCompactNamePlate'..x..'FrameOptions'][y] = false;
+          end
+        end
       end
-    end
-  end
+    end)
 end
 
 -- hooks
@@ -214,21 +217,19 @@ function Addon:UpdateName(frame)
       if (UnitGUID('target') == nil) then
         -- set unit health bar alpha
         frame.healthBar:SetAlpha(1);
+        frame.name:SetAlpha(1);
       else
-        local nameplate = C_NamePlate.GetNamePlateForUnit('target');
-        if (nameplate) then
-          -- set targeted unit health bar alpha
-          nameplate.UnitFrame.healthBar:SetAlpha(1);
-          -- set non targeted unit health bar alpha
-          frame.healthBar:SetAlpha(.3);
-        end
-      end
-
-      -- unit health bar color when we are tanking
-      if (frame.isTanking or IsTanking(frame.displayedUnit)) then
-        frame.name:SetVertexColor(1, 0, 0);
-      else
-        frame.name:SetVertexColor(1, 1, 1);
+        C_Timer.After(.3, function ()
+            local nameplate = C_NamePlate.GetNamePlateForUnit('target');
+            if (nameplate) then
+              -- set targeted unit health bar alpha
+              nameplate.UnitFrame.name:SetAlpha(1);
+              nameplate.UnitFrame.healthBar:SetAlpha(1);
+              -- set non targeted unit health bar alpha
+              frame.healthBar:SetAlpha(.3);
+              frame.name:SetAlpha(.5);
+            end
+          end)
       end
     end
   end
