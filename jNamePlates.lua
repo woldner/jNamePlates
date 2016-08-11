@@ -5,6 +5,12 @@ local _G = _G;
 local pairs = pairs;
 local select = select;
 
+local CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS;
+local ICON = {
+  Alliance = '\124TInterface/PVPFrame/PVP-Currency-Alliance:16\124t',
+  Horde = '\124TInterface/PVPFrame/PVP-Currency-Horde:16\124t'
+}
+
 -- helper functions
 local function IsTanking(unit)
   return select(1, UnitDetailedThreatSituation('player', unit));
@@ -52,11 +58,13 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateOtherTopInset', -1);
     SetCVar('nameplateOtherBottomInset', -1);
 
-    -- show class color on health bar for hostile opposite faction characters
-    SetCVar('ShowClassColorInNameplate', 1);
+    -- friendly nameplate healthbar class colors
+    DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true;
 
+    -- enemy nameplate healthbar hostile colors
+    SetCVar('ShowClassColorInNameplate', 0);
     -- override any enabled cvar
-    DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true;
+    DefaultCompactNamePlateEnemyFrameOptions.useClassColors = false;
 
     -- disable the classification indicator on nameplates
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
@@ -153,36 +161,74 @@ function Addon:UpdateHealthBorder(frame)
 end
 
 function Addon:UpdateName(frame)
-  if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
-    local level = UnitLevel(frame.unit);
-    if (level == -1) then
-      if (InCombat(frame.unit)) then
-        frame.name:SetText(GetUnitName(frame.unit, true)..'* (??)');
-      else
-        frame.name:SetText(GetUnitName(frame.unit, true)..' (??)');
-      end
-    else
-      if (InCombat(frame.unit)) then
-        frame.name:SetText(GetUnitName(frame.unit, true)..'* ('..level..')');
-      else
-        frame.name:SetText(GetUnitName(frame.unit, true)..' ('..level..')');
-      end
-    end
+  if (ShouldShowName(frame)) then
+    local name = GetUnitName(frame.unit, false);
+    frame.name:SetText(name);
 
-    if (UnitGUID('target') == nil) then
-      frame.healthBar:SetAlpha(1);
-    else
-      local nameplate = C_NamePlate.GetNamePlateForUnit('target');
-      if (nameplate) then
-        frame.healthBar:SetAlpha(0.5);
-        nameplate.UnitFrame.healthBar:SetAlpha(1);
-      end
-    end
+    if (frame.optionTable.colorNameBySelection) then
+      local level = UnitLevel(frame.unit);
 
-    if (IsTanking(frame.displayedUnit)) then
-      frame.name:SetVertexColor(1, 0, 0);
-    else
-      frame.name:SetVertexColor(1, 1, 1);
+      if (level == -1) then
+        if (InCombat(frame.unit)) then
+          frame.name:SetText(name .. '* (??)' or name);
+        else
+          frame.name:SetText(name .. ' (??)' or name);
+        end
+      else
+        if (UnitIsPlayer(frame.unit)) then
+          -- returns whether a unit is flagged for pvp activity
+          local isPVP = UnitIsPVP(frame.unit);
+          local faction = UnitFactionGroup(frame.unit);
+
+          if (InCombat(frame.unit)) then
+            -- player in combat
+            frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. '* (' .. level .. ')' or name .. '* (' .. level .. ')' or name);
+          else
+            -- player not in combat
+            frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. ' (' .. level .. ')' or name .. ' (' .. level .. ')' or name);
+          end
+
+          if (UnitIsEnemy('player', frame.unit)) then
+            local _, class = UnitClass(frame.unit);
+            local color = CLASS_COLORS[class];
+
+            -- color enemy players name with class color
+            frame.name:SetVertexColor(color.r, color.g, color.b);
+          else
+            -- color friendly players name white
+            frame.name:SetVertexColor(1, 1, 1);
+          end
+        else
+          if (InCombat(frame.unit)) then
+            -- monster unit in combat
+            frame.name:SetText(name .. '* (' .. level .. ')' or name);
+          else
+            -- monster unit not in combat
+            frame.name:SetText(name .. ' (' .. level .. ')' or name);
+          end
+        end
+      end
+
+      -- we have no target
+      if (UnitGUID('target') == nil) then
+        -- set unit health bar alpha
+        frame.healthBar:SetAlpha(1);
+      else
+        local nameplate = C_NamePlate.GetNamePlateForUnit('target');
+        if (nameplate) then
+          -- set targeted unit health bar alpha
+          nameplate.UnitFrame.healthBar:SetAlpha(1);
+          -- set non targeted unit health bar alpha
+          frame.healthBar:SetAlpha(0.5);
+        end
+      end
+
+      -- unit health bar color when we are tanking
+      if (frame.isTanking or IsTanking(frame.displayedUnit)) then
+        frame.name:SetVertexColor(1, 0, 0);
+      else
+        frame.name:SetVertexColor(1, 1, 1);
+      end
     end
   end
 end
