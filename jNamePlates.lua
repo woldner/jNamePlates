@@ -42,7 +42,7 @@ function Addon:PLAYER_LOGIN()
   self:HookActionEvents();
 end
 
--- configuration (credits to Ketho)
+-- configuration (partial credits to Ketho)
 function Addon:ConfigNamePlates()
   if (not InCombatLockdown()) then
     -- set distance back to 40 (down from 60)
@@ -62,7 +62,8 @@ function Addon:ConfigNamePlates()
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
     -- set the selected border color on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1.0, 0.0, 0.0, 1.0);
+    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
+    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
 
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
@@ -97,6 +98,10 @@ do
     Addon:UpdateHealthColor(frame);
   end
 
+  local function Frame_UpdateHealthBorder(frame)
+    Addon:UpdateHealthBorder(frame);
+  end
+
   local function Frame_UpdateName(frame)
     Addon:UpdateName(frame);
   end
@@ -104,6 +109,7 @@ do
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlate);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
+    hooksecurefunc('CompactUnitFrame_UpdateHealthBorder', Frame_UpdateHealthBorder);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
   end
 end
@@ -111,27 +117,37 @@ end
 function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.healthBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
+  frame.healthBar.background:SetVertexColor(0, 0, 0, 0.4);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- and cast bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.castBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
+  frame.castBar.background:SetVertexColor(0, 0, 0, 0.4);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
-  frame.castBar.border:SetVertexColor(0.0, 0.0, 0.0, 0.8);
 end
 
 function Addon:UpdateHealthColor(frame)
-  if ((UnitExists(frame.unit) or UnitExists(frame.displayedUnit)) and frame.isTanking or IsTanking(frame.displayedUnit)) then
-    -- color of name plate of unit targeting us
-    local r, g, b = 1.0, 0.0, 1.0;
+  if (UnitExists(frame.displayedUnit) and frame.isTanking or IsTanking(frame.displayedUnit)) then
+    -- color of nameplate of unit targeting us
+    local r, g, b = 1, 0, 1;
 
     if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
       frame.healthBar:SetStatusBarColor(r, g, b);
       frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
+    end
+  end
+end
+
+function Addon:UpdateHealthBorder(frame)
+  if (frame.castBar and frame.castBar.border) then
+    -- color of nameplate castbar border
+    local r, g, b, a = 0, 0, 0, 1;
+
+    if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b) then
+      frame.castBar.border:SetVertexColor(r, g, b, a);
     end
   end
 end
@@ -154,19 +170,19 @@ function Addon:UpdateName(frame)
     end
 
     if (UnitGUID('target') == nil) then
-      frame.healthBar:SetAlpha(1.0);
+      frame.healthBar:SetAlpha(1);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
         frame.healthBar:SetAlpha(0.5);
-        nameplate.UnitFrame.healthBar:SetAlpha(1.0);
+        nameplate.UnitFrame.healthBar:SetAlpha(1);
       end
     end
 
     if (IsTanking(frame.displayedUnit)) then
-      frame.name:SetVertexColor(1.0, 0.0, 0.0);
+      frame.name:SetVertexColor(1, 0, 0);
     else
-      frame.name:SetVertexColor(1.0, 1.0, 1.0);
+      frame.name:SetVertexColor(1, 1, 1);
     end
   end
 end
