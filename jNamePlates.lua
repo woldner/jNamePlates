@@ -56,7 +56,9 @@ function Addon:ConfigNamePlates()
     SetCVar('ShowClassColorInNameplate', 1);
 
     -- override any enabled cvar
-    DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true;
+    C_Timer.After(.1, function ()
+        DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true;
+      end)
 
     -- disable the classification indicator on nameplates
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
