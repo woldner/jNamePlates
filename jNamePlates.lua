@@ -62,7 +62,7 @@ function Addon:ConfigNamePlates()
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
     -- set the selected border color on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1.0, 0.0, 0.0, 1.0);
+    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 0, 0, 1);
 
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
@@ -111,23 +111,23 @@ end
 function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.healthBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
+  frame.healthBar.background:SetVertexColor(0, 0, 0, .33);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- and cast bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.castBar.background:SetVertexColor(0.0, 0.0, 0.0, 0.33);
+  frame.castBar.background:SetVertexColor(0, 0, 0, .33);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
-  frame.castBar.border:SetVertexColor(0.0, 0.0, 0.0, 0.8);
+  frame.castBar.border:SetVertexColor(0, 0, 0, .8);
 end
 
 function Addon:UpdateHealthColor(frame)
   if ((UnitExists(frame.unit) or UnitExists(frame.displayedUnit)) and frame.isTanking or IsTanking(frame.displayedUnit)) then
     -- color of name plate of unit targeting us
-    local r, g, b = 1.0, 0.0, 1.0;
+    local r, g, b = 1, 0, 1;
 
     if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
       frame.healthBar:SetStatusBarColor(r, g, b);
@@ -139,34 +139,39 @@ end
 function Addon:UpdateName(frame)
   if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
     local level = UnitLevel(frame.unit);
+    local name = GetUnitName(frame.unit, false);
     if (level == -1) then
       if (InCombat(frame.unit)) then
-        frame.name:SetText(GetUnitName(frame.unit, true)..'* (??)');
+        frame.name:SetText(name..'* (??)');
       else
-        frame.name:SetText(GetUnitName(frame.unit, true)..' (??)');
+        frame.name:SetText(name..' (??)');
       end
     else
       if (InCombat(frame.unit)) then
-        frame.name:SetText(GetUnitName(frame.unit, true)..'* ('..level..')');
+        frame.name:SetText(name..'* ('..level..')');
       else
-        frame.name:SetText(GetUnitName(frame.unit, true)..' ('..level..')');
+        frame.name:SetText(name..' ('..level..')');
       end
     end
 
     if (UnitGUID('target') == nil) then
-      frame.healthBar:SetAlpha(1.0);
+      frame.healthBar:SetAlpha(1);
+      frame.name:SetAlpha(1);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        frame.healthBar:SetAlpha(0.5);
-        nameplate.UnitFrame.healthBar:SetAlpha(1.0);
+        frame.healthBar:SetAlpha(.5);
+        frame.name:SetAlpha(.5);
+
+        nameplate.UnitFrame.healthBar:SetAlpha(1);
+        nameplate.UnitFrame.name:SetAlpha(1);
       end
     end
 
     if (IsTanking(frame.displayedUnit)) then
-      frame.name:SetVertexColor(1.0, 0.0, 0.0);
+      frame.name:SetVertexColor(1, 0, 0);
     else
-      frame.name:SetVertexColor(1.0, 1.0, 1.0);
+      frame.name:SetVertexColor(1, 1, 1);
     end
   end
 end
