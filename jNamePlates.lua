@@ -70,8 +70,8 @@ function Addon:ConfigNamePlates()
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
     -- set the selected border color on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
-    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
+    -- DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
+    -- DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(1, 1, 1, 1);
 
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
