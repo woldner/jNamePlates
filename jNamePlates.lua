@@ -172,13 +172,7 @@ function Addon:UpdateName(frame)
     local level = UnitLevel(frame.unit);
     local name = GetUnitName(frame.unit, false);
 
-    if (level == -1) then
-      if (InCombat(frame.unit)) then
-        frame.name:SetText(name .. '* (??)');
-      else
-        frame.name:SetText(name .. ' (??)');
-      end
-    elseif (UnitIsPlayer(frame.unit)) then
+    if (UnitIsPlayer(frame.unit)) then
       local isPVP = UnitIsPVP(frame.unit);
       local faction = UnitFactionGroup(frame.unit);
 
@@ -201,6 +195,12 @@ function Addon:UpdateName(frame)
       else
         -- color friendly players name white
         frame.name:SetVertexColor(1, 1, 1);
+      end
+    elseif (level == -1) then
+      if (InCombat(frame.unit)) then
+        frame.name:SetText(name .. '* (??)');
+      else
+        frame.name:SetText(name .. ' (??)');
       end
     else
       if (InCombat(frame.unit)) then
