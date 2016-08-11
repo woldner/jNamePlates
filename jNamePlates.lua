@@ -48,7 +48,7 @@ function Addon:PLAYER_LOGIN()
   self:HookActionEvents();
 end
 
--- configuration (credits to Ketho)
+-- configuration (partial credits to Ketho)
 function Addon:ConfigNamePlates()
   if (not InCombatLockdown()) then
     -- set distance back to 40 (down from 60)
@@ -98,8 +98,7 @@ function Addon:ConfigNamePlates()
         }) do
         _G['DefaultCompactNamePlate'..x..'FrameOptions'][y] = false;
       end
-    end
-  end
+    end)
 end
 
 -- hooks
@@ -208,7 +207,6 @@ function Addon:UpdateName(frame)
       else
         frame.name:SetText(name .. ' (' .. level .. ')');
       end
-    end
 
     if (UnitGUID('target') == nil) then
       frame.healthBar:SetAlpha(1);
