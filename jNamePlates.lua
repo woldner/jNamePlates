@@ -75,7 +75,7 @@ function Addon:ConfigNamePlates()
         DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
 
         -- set the selected border color on friendly nameplates
-        DefaultCompactNamePlateFriendFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+        DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
       end)
 
     -- always show names on nameplates
@@ -150,10 +150,10 @@ end
 function Addon:UpdateHealthBorder(frame)
   if (frame.castBar and frame.castBar.border) then
     -- color of nameplate castbar border
-    local r, g, b = 0, 0, 0;
+    local r, g, b, a = 0, 0, 0, frame.castBar:GetAlpha();
 
     if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b) then
-      frame.castBar.border:SetVertexColor(r, g, b);
+      frame.castBar.border:SetVertexColor(r, g, b, a);
     end
   end
 end
@@ -165,15 +165,15 @@ function Addon:UpdateName(frame)
 
     if (level == -1) then
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name..'* (??)');
+        frame.name:SetText(name .. '* (??)');
       else
-        frame.name:SetText(name..' (??)');
+        frame.name:SetText(name .. ' (??)');
       end
     else
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name..'* ('..level..')');
+        frame.name:SetText(name .. '* (' .. level .. ')');
       else
-        frame.name:SetText(name..' ('..level..')');
+        frame.name:SetText(name .. ' (' .. level .. ')');
       end
     end
 
