@@ -125,7 +125,7 @@ function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
 end
 
 function Addon:UpdateHealthColor(frame)
-  if (UnitExists(frame.unit) or UnitExists(frame.displayedUnit) and frame.isTanking or IsTanking(frame.displayedUnit)) then
+  if ((UnitExists(frame.unit) or UnitExists(frame.displayedUnit)) and frame.isTanking or IsTanking(frame.displayedUnit)) then
     -- color of name plate of unit targeting us
     local r, g, b = 1.0, 0.0, 1.0;
 
