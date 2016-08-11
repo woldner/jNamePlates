@@ -176,10 +176,10 @@ function Addon:UpdateName(frame)
         end
       else
         if (UnitIsPlayer(frame.unit)) then
-          -- returns whether a unit is flagged for pvp activity
           local isPVP = UnitIsPVP(frame.unit);
           local faction = UnitFactionGroup(frame.unit);
 
+          -- set name text
           if (InCombat(frame.unit)) then
             -- player in combat
             frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. '* (' .. level .. ')' or name .. '* (' .. level .. ')' or name);
@@ -188,6 +188,7 @@ function Addon:UpdateName(frame)
             frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. ' (' .. level .. ')' or name .. ' (' .. level .. ')' or name);
           end
 
+          -- set name color
           if (UnitIsEnemy('player', frame.unit)) then
             local _, class = UnitClass(frame.unit);
             local color = CLASS_COLORS[class];
@@ -219,7 +220,7 @@ function Addon:UpdateName(frame)
           -- set targeted unit health bar alpha
           nameplate.UnitFrame.healthBar:SetAlpha(1);
           -- set non targeted unit health bar alpha
-          frame.healthBar:SetAlpha(5);
+          frame.healthBar:SetAlpha(.3);
         end
       end
 
