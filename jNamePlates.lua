@@ -140,6 +140,7 @@ function Addon:UpdateName(frame)
   if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
     local level = UnitLevel(frame.unit);
     local name = GetUnitName(frame.unit, false);
+
     if (level == -1) then
       if (InCombat(frame.unit)) then
         frame.name:SetText(name..'* (??)');
@@ -160,11 +161,16 @@ function Addon:UpdateName(frame)
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        frame.healthBar:SetAlpha(.5);
+        frame.healthBar:SetAlpha(.3);
         frame.name:SetAlpha(.5);
 
         nameplate.UnitFrame.healthBar:SetAlpha(1);
         nameplate.UnitFrame.name:SetAlpha(1);
+      else
+        -- we have a target but unit has no nameplate
+        -- keep frames faded
+        frame.healthBar:SetAlpha(.3);
+        frame.name:SetAlpha(.5);
       end
     end
 
