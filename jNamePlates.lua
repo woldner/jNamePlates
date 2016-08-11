@@ -179,10 +179,10 @@ function Addon:UpdateName(frame)
       -- set unit player name
       if (InCombat(frame.unit)) then
         -- unit player in combat
-        frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. '* (' .. level .. ')' or name .. '* (' .. level .. ')');
+        frame.name:SetText((isPVP and faction) and ICON[faction] .. '' .. name .. ' * (' .. level .. ')' or name .. ' * (' .. level .. ')');
       else
         -- unit player out of combat
-        frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. ' (' .. level .. ')' or name .. ' (' .. level .. ')');
+        frame.name:SetText((isPVP and faction) and ICON[faction] .. ' ' .. name .. ' (' .. level .. ')' or name .. ' (' .. level .. ')');
       end
 
       -- set unit player name color
@@ -198,13 +198,13 @@ function Addon:UpdateName(frame)
       end
     elseif (level == -1) then
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name .. '* (??)');
+        frame.name:SetText(name .. ' * (??)');
       else
         frame.name:SetText(name .. ' (??)');
       end
     else
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name .. '* (' .. level .. ')');
+        frame.name:SetText(name .. ' * (' .. level .. ')');
       else
         frame.name:SetText(name .. ' (' .. level .. ')');
       end
