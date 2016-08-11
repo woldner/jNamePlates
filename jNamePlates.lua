@@ -5,6 +5,12 @@ local _G = _G;
 local pairs = pairs;
 local select = select;
 
+local CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS;
+local ICON = {
+  Alliance = '\124TInterface/PVPFrame/PVP-Currency-Alliance:16\124t',
+  Horde = '\124TInterface/PVPFrame/PVP-Currency-Horde:16\124t'
+}
+
 -- helper functions
 local function IsTanking(unit)
   return select(1, UnitDetailedThreatSituation('player', unit));
@@ -52,8 +58,8 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateOtherTopInset', -1);
     SetCVar('nameplateOtherBottomInset', -1);
 
-    -- show class color on health bar for hostile opposite faction characters
-    SetCVar('ShowClassColorInNameplate', 1);
+    -- show class color on health bar for friendly characters
+    SetCVar('ShowClassColorInNameplate', 0);
 
     -- prevent nameplates from fading when you move away
     SetCVar('nameplateMaxAlpha', 1);
@@ -63,13 +69,16 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateMaxScale', 1);
     SetCVar('nameplateMinScale', 1);
 
+    -- enable class colors on friendly nameplates
+    DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true;
+
+    -- disable the classification indicator on nameplates
+    DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
+
     -- override any enabled cvar
     C_Timer.After(.1, function ()
-        -- enable class colors on enemy nameplates
-        DefaultCompactNamePlateEnemyFrameOptions.useClassColors = true;
-
-        -- disable the classification indicator on nameplates
-        DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
+        -- disable class colors on enemy nameplates
+        DefaultCompactNamePlateEnemyFrameOptions.useClassColors = false;
 
         -- set the selected border color on enemy nameplates
         DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
@@ -168,6 +177,30 @@ function Addon:UpdateName(frame)
         frame.name:SetText(name .. '* (??)');
       else
         frame.name:SetText(name .. ' (??)');
+      end
+    elseif (UnitIsPlayer(frame.unit)) then
+      local isPVP = UnitIsPVP(frame.unit);
+      local faction = UnitFactionGroup(frame.unit);
+
+      -- set unit player name
+      if (InCombat(frame.unit)) then
+        -- unit player in combat
+        frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. '* (' .. level .. ')' or name .. '* (' .. level .. ')');
+      else
+        -- unit player out of combat
+        frame.name:SetText((isPVP and faction) and ICON[faction] .. name .. ' (' .. level .. ')' or name .. ' (' .. level .. ')');
+      end
+
+      -- set unit player name color
+      if (UnitIsEnemy('player', frame.unit)) then
+        local _, class = UnitClass(frame.unit);
+        local color = CLASS_COLORS[class];
+
+        -- color enemy players name with class color
+        frame.name:SetVertexColor(color.r, color.g, color.b);
+      else
+        -- color friendly players name white
+        frame.name:SetVertexColor(1, 1, 1);
       end
     else
       if (InCombat(frame.unit)) then
