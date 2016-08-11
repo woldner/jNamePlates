@@ -125,12 +125,12 @@ end
 function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.healthBar.background:SetVertexColor(0, 0, 0, 0.4);
+  frame.healthBar.background:SetVertexColor(0, 0, 0, .4);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- and cast bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.castBar.background:SetVertexColor(0, 0, 0, 0.4);
+  frame.castBar.background:SetVertexColor(0, 0, 0, .4);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
@@ -219,7 +219,7 @@ function Addon:UpdateName(frame)
           -- set targeted unit health bar alpha
           nameplate.UnitFrame.healthBar:SetAlpha(1);
           -- set non targeted unit health bar alpha
-          frame.healthBar:SetAlpha(0.5);
+          frame.healthBar:SetAlpha(5);
         end
       end
 
