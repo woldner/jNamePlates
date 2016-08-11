@@ -103,6 +103,10 @@ do
     Addon:UpdateHealthColor(frame);
   end
 
+  local function Frame_UpdateHealthBorder(frame)
+    Addon:UpdateHealthBorder(frame);
+  end
+
   local function Frame_UpdateName(frame)
     Addon:UpdateName(frame);
   end
@@ -110,6 +114,7 @@ do
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlate);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
+    hooksecurefunc('CompactUnitFrame_UpdateHealthBorder', Frame_UpdateHealthBorder);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
   end
 end
@@ -117,17 +122,17 @@ end
 function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.healthBar.background:SetVertexColor(0, 0, 0, .33);
+  frame.healthBar.background:SetVertexColor(0, 0, 0, .4);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- and cast bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.castBar.background:SetVertexColor(0, 0, 0, .33);
+  frame.castBar.background:SetVertexColor(0, 0, 0, .4);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
-  frame.castBar.border:SetVertexColor(0, 0, 0, .8);
+  frame.castBar.border:SetVertexColor(0, 0, 0, 1);
 end
 
 function Addon:UpdateHealthColor(frame)
@@ -138,6 +143,17 @@ function Addon:UpdateHealthColor(frame)
     if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
       frame.healthBar:SetStatusBarColor(r, g, b);
       frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
+    end
+  end
+end
+
+function Addon:UpdateHealthBorder(frame)
+  if (frame.castBar and frame.castBar.border) then
+    -- color of nameplate castbar border
+    local r, g, b = 0, 0, 0;
+
+    if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b) then
+      frame.castBar.border:SetVertexColor(r, g, b);
     end
   end
 end
