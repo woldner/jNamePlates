@@ -20,6 +20,10 @@ local function InCombat(unit)
   return (UnitAffectingCombat(unit) and UnitCanAttack('player', unit));
 end
 
+local function IsOnThreatList(unit)
+  return (select(2, UnitDetailedThreatSituation('player', unit)) ~= nil);
+end
+
 -- main
 function Addon:Load()
   do
@@ -197,16 +201,36 @@ function Addon:UpdateName(frame)
         frame.name:SetVertexColor(1, 1, 1);
       end
     elseif (level == -1) then
+      -- set boss name text
       if (InCombat(frame.unit)) then
         frame.name:SetText(name .. ' * (??)');
       else
         frame.name:SetText(name .. ' (??)');
       end
+
+      -- set boss name color
+      if (IsTanking(frame.displayedUnit)) then
+        frame.name:SetVertexColor(1, 0, 1);
+      elseif (IsOnThreatList(frame.displayedUnit)) then
+        frame.name:SetVertexColor(1, 0, 0);
+      else
+        frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+      end
     else
+      -- set monster name text
       if (InCombat(frame.unit)) then
         frame.name:SetText(name .. ' * (' .. level .. ')');
       else
         frame.name:SetText(name .. ' (' .. level .. ')');
+      end
+
+      -- set monster name color
+      if (IsTanking(frame.displayedUnit)) then
+        frame.name:SetVertexColor(1, 0, 1);
+      elseif (IsOnThreatList(frame.displayedUnit)) then
+        frame.name:SetVertexColor(1, 0, 0);
+      else
+        frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
       end
     end
 
@@ -227,12 +251,6 @@ function Addon:UpdateName(frame)
         frame.healthBar:SetAlpha(.3);
         frame.name:SetAlpha(.5);
       end
-    end
-
-    if (IsTanking(frame.displayedUnit)) then
-      frame.name:SetVertexColor(1, 0, 0);
-    else
-      frame.name:SetVertexColor(1, 1, 1);
     end
   end
 end
