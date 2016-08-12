@@ -58,7 +58,7 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateOtherTopInset', -1);
     SetCVar('nameplateOtherBottomInset', -1);
 
-    -- show class color on health bar for friendly characters
+    -- hide class color on health bar for enemy players
     SetCVar('ShowClassColorInNameplate', 0);
 
     -- prevent nameplates from fading when you move away
