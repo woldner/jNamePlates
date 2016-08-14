@@ -3,7 +3,6 @@ local AddonName, Addon = ...;
 
 local _G = _G;
 local pairs = pairs;
-local select = select;
 
 local CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS;
 local ICON = {
@@ -13,15 +12,17 @@ local ICON = {
 
 -- helper functions
 local function IsTanking(unit)
-  return select(1, UnitDetailedThreatSituation('player', unit));
+  local isTanking = UnitDetailedThreatSituation('player', unit);
+  return isTanking;
 end
 
 local function InCombat(unit)
-  return (UnitAffectingCombat(unit) and UnitCanAttack('player', unit));
+  return UnitAffectingCombat(unit) and UnitCanAttack('player', unit);
 end
 
 local function IsOnThreatList(unit)
-  return (select(2, UnitDetailedThreatSituation('player', unit)) ~= nil);
+  local _, status = UnitDetailedThreatSituation('player', unit);
+  return status ~= nil;
 end
 
 -- main
@@ -144,7 +145,7 @@ function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
-  frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
+  frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateSecondaryBarBorderTemplate');
   frame.castBar.border:SetVertexColor(0, 0, 0, 1);
 end
 
@@ -163,7 +164,7 @@ end
 function Addon:UpdateHealthBorder(frame)
   if (frame.castBar and frame.castBar.border) then
     -- color of nameplate castbar border
-    local r, g, b, a = 0, 0, 0, frame.castBar:GetAlpha();
+    local r, g, b, a = 0, 0, 0, frame.healthBar:GetAlpha();
 
     if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b) then
       frame.castBar.border:SetVertexColor(r, g, b, a);
@@ -183,7 +184,7 @@ function Addon:UpdateName(frame)
       -- set unit player name
       if (InCombat(frame.unit)) then
         -- unit player in combat
-        frame.name:SetText((isPVP and faction) and ICON[faction] .. '' .. name .. ' * (' .. level .. ')' or name .. ' * (' .. level .. ')');
+        frame.name:SetText((isPVP and faction) and ICON[faction] .. ' ' .. name .. ' (' .. level .. ') *' or name .. ' (' .. level .. ') *');
       else
         -- unit player out of combat
         frame.name:SetText((isPVP and faction) and ICON[faction] .. ' ' .. name .. ' (' .. level .. ')' or name .. ' (' .. level .. ')');
@@ -203,34 +204,34 @@ function Addon:UpdateName(frame)
     elseif (level == -1) then
       -- set boss name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name .. ' * (??)');
+        frame.name:SetText(name .. ' (??) *');
       else
         frame.name:SetText(name .. ' (??)');
       end
 
       -- set boss name color
-      if (IsTanking(frame.displayedUnit)) then
-        frame.name:SetVertexColor(1, 0, 1);
-      elseif (IsOnThreatList(frame.displayedUnit)) then
+      if (IsOnThreatList(frame.displayedUnit)) then
         frame.name:SetVertexColor(1, 0, 0);
+      elseif (UnitCanAttack('player', frame.unit)) then
+        frame.name:SetVertexColor(1, .5, .5);
       else
-        frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+        frame.name:SetVertexColor(1, 1, 1);
       end
     else
       -- set monster name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name .. ' * (' .. level .. ')');
+        frame.name:SetText(name .. ' (' .. level .. ') *');
       else
         frame.name:SetText(name .. ' (' .. level .. ')');
       end
 
       -- set monster name color
-      if (IsTanking(frame.displayedUnit)) then
-        frame.name:SetVertexColor(1, 0, 1);
-      elseif (IsOnThreatList(frame.displayedUnit)) then
+      if (IsOnThreatList(frame.displayedUnit)) then
         frame.name:SetVertexColor(1, 0, 0);
+      elseif (UnitCanAttack('player', frame.unit)) then
+        frame.name:SetVertexColor(1, .5, .5);
       else
-        frame.name:SetVertexColor(UnitSelectionColor(frame.unit));
+        frame.name:SetVertexColor(1, 1, 1);
       end
     end
 
