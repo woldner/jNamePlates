@@ -87,9 +87,13 @@ function Addon:ConfigNamePlates()
 
         -- set the selected border color on enemy nameplates
         DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+        DefaultCompactNamePlateEnemyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
+        DefaultCompactNamePlateEnemyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
 
         -- set the selected border color on friendly nameplates
         DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+        DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
+        DefaultCompactNamePlateFriendlyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
       end)
 
     -- always show names on nameplates
@@ -125,16 +129,11 @@ do
     Addon:UpdateName(frame);
   end
 
-  local function Frame_ApplyAlpha(frame, alpha)
-    Addon:ApplyAlpha(frame, alpha);
-  end
-
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
     hooksecurefunc('CompactUnitFrame_UpdateHealthBorder', Frame_UpdateHealthBorder);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
-    hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha);
   end
 end
 
@@ -230,9 +229,9 @@ function Addon:UpdateName(frame)
       if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
         frame.name:SetVertexColor(1, 0, 0);
       elseif (UnitCanAttack('player', frame.unit)) then
-        frame.name:SetVertexColor(1, .6, .6);
+        frame.name:SetVertexColor(1, .5, .5);
       else
-        frame.name:SetVertexColor(.6, 1, .6);
+        frame.name:SetVertexColor(.5, 1, .5);
       end
     else
       -- set name text
@@ -246,13 +245,13 @@ function Addon:UpdateName(frame)
       if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
         frame.name:SetVertexColor(1, 0, 0);
       elseif (UnitCanAttack('player', frame.unit)) then
-        frame.name:SetVertexColor(1, .6, .6);
+        frame.name:SetVertexColor(1, .5, .5);
       elseif (UnitIsPlayer(frame.unit)) then
         -- friendly player
         frame.name:SetVertexColor(1, 1, 1);
       else
         -- friendly npc
-        frame.name:SetVertexColor(.6, 1, .6);
+        frame.name:SetVertexColor(.5, 1, .5);
       end
     end
 
@@ -263,8 +262,8 @@ function Addon:UpdateName(frame)
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        frame.name:SetAlpha(.6);
-        frame.healthBar:SetAlpha(.4);
+        frame.name:SetAlpha(.5);
+        frame.healthBar:SetAlpha(.3);
         -- frame.castBar:SetAlpha(.5);
 
         nameplate.UnitFrame.name:SetAlpha(1);
@@ -273,20 +272,9 @@ function Addon:UpdateName(frame)
       else
         -- we have a target but unit has no nameplate
         -- keep frames faded to indicate we have a target
-        frame.name:SetAlpha(.6);
-        frame.healthBar:SetAlpha(.4);
+        frame.name:SetAlpha(.5);
+        frame.healthBar:SetAlpha(.3);
         -- frame.castBar:SetAlpha(.5);
-      end
-    end
-  end
-end
-
-function Addon:ApplyAlpha(frame, alpha)
-  if (not UnitCanAttack('player', frame.unit)) then
-    frame:SetAlpha(.4);
-    if (frame.additionalFadeWidgets) then
-      for widget in pairs(frame.additionalFadeWidgets) do
-        widget:SetAlpha(.4);
       end
     end
   end
