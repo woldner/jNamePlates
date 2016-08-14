@@ -282,11 +282,13 @@ function Addon:UpdateName(frame)
 end
 
 function Addon:ApplyAlpha(frame, alpha)
-  if (not UnitCanAttack('player', frame.unit)) then
-    frame:SetAlpha(.4);
+  alpha = frame.healthBar:GetAlpha();
+
+  if (not UnitCanAttack('player', frame.unit) and alpha < 1) then
+    frame:SetAlpha(alpha);
     if (frame.additionalFadeWidgets) then
       for widget in pairs(frame.additionalFadeWidgets) do
-        widget:SetAlpha(.4);
+        widget:SetAlpha(alpha);
       end
     end
   end
