@@ -149,7 +149,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 
   -- when using small nameplates move the text below the cast bar
   if (setupOptions.useLargeNameFont) then
-    frame.castBar.Text:CleanAllPoints();
+    frame.castBar.Text:ClearAllPoints();
     frame.castBar.Text:SetAllPoints(frame.castBar);
   else
     frame.castBar.Text:ClearAllPoints();
