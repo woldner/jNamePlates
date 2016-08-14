@@ -109,8 +109,8 @@ end
 
 -- hooks
 do
-  local function Frame_SetupNamePlate(frame, setupOptions, frameOptions)
-    Addon:SetupNamePlate(frame, setupOptions, frameOptions);
+  local function Frame_SetupNamePlateInternal(frame, setupOptions, frameOptions)
+    Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions);
   end
 
   local function Frame_UpdateHealthColor(frame)
@@ -126,14 +126,14 @@ do
   end
 
   function Addon:HookActionEvents()
-    hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlate);
+    hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
     hooksecurefunc('CompactUnitFrame_UpdateHealthBorder', Frame_UpdateHealthBorder);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
   end
 end
 
-function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
+function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
   frame.healthBar.background:SetVertexColor(0, 0, 0, .4);
@@ -146,7 +146,18 @@ function Addon:SetupNamePlate(frame, setupOptions, frameOptions)
 
   -- create a border from template just like the one around the health bar
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateSecondaryBarBorderTemplate');
-  frame.castBar.border:SetVertexColor(0, 0, 0, 1);
+
+  -- when using small nameplates move the text below the cast bar
+  if (setupOptions.useLargeNameFont) then
+    frame.castBar.Text:CleanAllPoints();
+    frame.castBar.Text:SetAllPoints(frame.castBar);
+  else
+    frame.castBar.Text:ClearAllPoints();
+    frame.castBar.Text:SetPoint('CENTER', frame.castBar, 'CENTER', 0, -16);
+  end
+
+  local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
+  frame.castBar.Text:SetFont(fontName, setupOptions.castBarFontHeight + 6, fontFlags);
 end
 
 function Addon:UpdateHealthColor(frame)
@@ -164,9 +175,9 @@ end
 function Addon:UpdateHealthBorder(frame)
   if (frame.castBar and frame.castBar.border) then
     -- color of nameplate castbar border
-    local r, g, b, a = 0, 0, 0, frame.healthBar:GetAlpha();
+    local r, g, b, a = frame.healthBar.border.r, frame.healthBar.border.g, frame.healthBar.border.b, frame.healthBar.border.a;
 
-    if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b) then
+    if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b or a ~= frame.castBar.border.a) then
       frame.castBar.border:SetVertexColor(r, g, b, a);
     end
   end
@@ -236,21 +247,25 @@ function Addon:UpdateName(frame)
     end
 
     if (UnitGUID('target') == nil) then
-      frame.healthBar:SetAlpha(1);
       frame.name:SetAlpha(1);
+      frame.healthBar:SetAlpha(1);
+      frame.castBar:SetAlpha(1);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        frame.healthBar:SetAlpha(.3);
         frame.name:SetAlpha(.5);
+        frame.healthBar:SetAlpha(.5);
+        frame.castBar:SetAlpha(.5);
 
-        nameplate.UnitFrame.healthBar:SetAlpha(1);
         nameplate.UnitFrame.name:SetAlpha(1);
+        nameplate.UnitFrame.healthBar:SetAlpha(1);
+        nameplate.UnitFrame.castBar:SetAlpha(1);
       else
         -- we have a target but unit has no nameplate
-        -- keep frames faded
-        frame.healthBar:SetAlpha(.3);
+        -- keep frames faded to indicate we have a target
         frame.name:SetAlpha(.5);
+        frame.healthBar:SetAlpha(.5);
+        frame.castBar:SetAlpha(.5);
       end
     end
   end
