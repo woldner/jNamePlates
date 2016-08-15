@@ -12,8 +12,7 @@ local ICON = {
 
 -- helper functions
 local function IsTanking(unit)
-  local isTanking = UnitDetailedThreatSituation('player', unit);
-  return isTanking;
+  return select(1, UnitDetailedThreatSituation('player', unit));
 end
 
 local function InCombat(unit)
@@ -21,8 +20,7 @@ local function InCombat(unit)
 end
 
 local function IsOnThreatList(unit)
-  local _, threatStatus = UnitDetailedThreatSituation('player', unit);
-  return threatStatus ~= nil;
+  return select(2, UnitDetailedThreatSituation('player', unit)) ~= nil;
 end
 
 -- main
