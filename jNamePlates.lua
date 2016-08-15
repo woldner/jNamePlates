@@ -129,11 +129,17 @@ do
     Addon:UpdateName(frame);
   end
 
+  local function Frame_ApplyAlpha(frame, alpha)
+    Addon:ApplyAlpha(frame, alpha);
+  end
+
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
     hooksecurefunc('CompactUnitFrame_UpdateHealthBorder', Frame_UpdateHealthBorder);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
+
+    hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha);
   end
 end
 
@@ -217,7 +223,7 @@ function Addon:UpdateName(frame)
         -- color friendly players name white
         frame.name:SetVertexColor(1, 1, 1);
       end
-    elseif (-1 == level) then
+    elseif (level == -1) then
       -- set boss name text
       if (InCombat(frame.unit)) then
         frame.name:SetText(name .. ' (??) *');
@@ -255,26 +261,43 @@ function Addon:UpdateName(frame)
       end
     end
 
-    if (nil == UnitGUID('target')) then
-      frame.name:SetAlpha(1);
-      frame.healthBar:SetAlpha(1);
-      -- frame.castBar:SetAlpha(1);
+    if (UnitGUID('target') == nil) then
+      frame:SetAlpha(1);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        frame.name:SetAlpha(.5);
-        frame.healthBar:SetAlpha(.3);
-        -- frame.castBar:SetAlpha(.5);
-
-        nameplate.UnitFrame.name:SetAlpha(1);
-        nameplate.UnitFrame.healthBar:SetAlpha(1);
-        -- nameplate.UnitFrame.castBar:SetAlpha(1);
+        frame:SetAlpha(.5);
+        nameplate.UnitFrame:SetAlpha(1);
       else
         -- we have a target but unit has no nameplate
         -- keep frames faded to indicate we have a target
-        frame.name:SetAlpha(.5);
-        frame.healthBar:SetAlpha(.3);
-        -- frame.castBar:SetAlpha(.5);
+        frame:SetAlpha(.5);
+      end
+    end
+  end
+end
+
+do
+  -- borrowed from CastingBarFrame.lua
+  local function SetAlpha(frame, alpha)
+    frame:SetAlpha(alpha);
+    if (frame.additionalFadeWidgets) then
+      for widget in pairs(frame.additionalFadeWidgets) do
+        widget:SetAlpha(alpha);
+      end
+    end
+  end
+
+  function Addon:ApplyAlpha(frame, alpha)
+    -- casting bar unit is friendly
+    if (not UnitCanAttack('player', frame.unit) and alpha > 0) then
+      if (UnitGUID('target') == nil) then
+        SetAlpha(frame, alpha);
+      else
+        local nameplate = C_NamePlate.GetNamePlateForUnit('target');
+        if (nameplate) then
+          SetAlpha(nameplate.UnitFrame.castBar, alpha);
+        end
       end
     end
   end
