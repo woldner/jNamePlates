@@ -264,12 +264,13 @@ function Addon:UpdateName(frame)
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        frame:SetAlpha(.5);
+        frame:SetAlpha(.4);
+
         nameplate.UnitFrame:SetAlpha(1);
       else
         -- we have a target but unit has no nameplate
         -- keep frames faded to indicate we have a target
-        frame:SetAlpha(.5);
+        frame:SetAlpha(.4);
       end
     end
   end
