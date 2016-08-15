@@ -26,6 +26,7 @@ local function IsOnThreatList(unit)
   return select(2, UnitDetailedThreatSituation('player', unit)) ~= nil;
 end
 
+-- identical to CastingBarFrame_ApplyAlpha
 local function ApplyCastingBarAlpha(frame, alpha)
   frame:SetAlpha(alpha);
   if (frame.additionalFadeWidgets) then
