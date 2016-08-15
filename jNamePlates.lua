@@ -274,9 +274,8 @@ function Addon:UpdateName(frame)
     if (UnitGUID('target') == nil) then
       frame.name:SetAlpha(1);
       frame.healthBar:SetAlpha(1);
-      -- frame.castBar:SetAlpha(1);
 
-      SetAlpha(frame.castBar, 1);
+      ApplyCastingBarAlpha(frame.castBar, 1);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
@@ -293,7 +292,7 @@ function Addon:UpdateName(frame)
         ApplyCastingBarAlpha(nameplate.UnitFrame.castBar, 1);
       else
         -- we have a target but unit has no nameplate
-        -- keep casting bars faded to indicate we have a target
+        -- keep casting bars faded to indicate we have a target selected
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
 
@@ -307,22 +306,20 @@ end
 
 function Addon:ApplyAlpha(frame, alpha)
   if (frame.unit == 'player' or frame.unit == 'target') then return end
-  -- friendly unit
+
+  -- unit is friendly
   if (not UnitCanAttack('player', frame.unit) and alpha > 0) then
     if (UnitGUID('target') == nil) then
-      -- set alpha on all non-targeted units casting bar (from 1)
       ApplyCastingBarAlpha(frame, alpha);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        -- set alpha on targeted unit casting bar (from 1)
         ApplyCastingBarAlpha(nameplate.UnitFrame.castBar, alpha);
 
-        -- set alpha on other units casting bar (from .4)
         ApplyCastingBarAlpha(frame, (alpha * BAR_FADE_VALUE));
       else
         -- we have a target but unit has no nameplate
-        -- keep casting bars faded to indicate we have a target
+        -- keep casting bars faded to indicate we have a target selected
         ApplyCastingBarAlpha(frame, (alpha * BAR_FADE_VALUE));
       end
     end
