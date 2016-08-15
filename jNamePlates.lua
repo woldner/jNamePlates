@@ -233,9 +233,9 @@ function Addon:UpdateName(frame)
       if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
         frame.name:SetVertexColor(1, 0, 0);
       elseif (UnitCanAttack('player', frame.unit)) then
-        frame.name:SetVertexColor(1, .5, .5);
+        frame.name:SetVertexColor(1, .8, .8);
       else
-        frame.name:SetVertexColor(.5, 1, .5);
+        frame.name:SetVertexColor(.8, 1, .8);
       end
     else
       -- set name text
@@ -249,13 +249,13 @@ function Addon:UpdateName(frame)
       if (frame.optionTable.considerSelectionInCombatAsHostile and IsOnThreatList(frame.displayedUnit)) then
         frame.name:SetVertexColor(1, 0, 0);
       elseif (UnitCanAttack('player', frame.unit)) then
-        frame.name:SetVertexColor(1, .5, .5);
+        frame.name:SetVertexColor(1, .8, .8);
       elseif (UnitIsPlayer(frame.unit)) then
         -- friendly player
         frame.name:SetVertexColor(1, 1, 1);
       else
         -- friendly npc
-        frame.name:SetVertexColor(.5, 1, .5);
+        frame.name:SetVertexColor(.8, 1, .8);
       end
     end
 
