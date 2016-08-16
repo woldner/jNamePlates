@@ -197,7 +197,7 @@ end
 function Addon:UpdateHealthBorder(frame)
   if (frame.castBar and frame.castBar.border) then
     -- color of nameplate cast bar border
-    local r, g, b, a = 0, 0, 0, frame.healthBar:GetAlpha();
+    local r, g, b, a = frame.healthBar.border.r, frame.healthBar.border.g, frame.healthBar.border.b, frame.healthBar.border.a;
 
     if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b or a ~= frame.castBar.border.a) then
       frame.castBar.border:SetVertexColor(r, g, b, a);
