@@ -108,15 +108,15 @@ function Addon:ConfigNamePlates()
       end)
 
     -- always show names on nameplates
-    for _, x in pairs({
+    for _, i in pairs({
         'Friendly',
         'Enemy'
       }) do
-      for _, y in pairs({
+      for _, j in pairs({
           'displayNameWhenSelected',
           'displayNameByPlayerNameRules'
         }) do
-        _G['DefaultCompactNamePlate'..x..'FrameOptions'][y] = false;
+        _G['DefaultCompactNamePlate'.. i ..'FrameOptions'][j] = false;
       end
     end
   end
