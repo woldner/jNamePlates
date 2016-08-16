@@ -160,7 +160,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   frame.healthBar.background:SetVertexColor(0, 0, 0, .4);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
-  -- and cast bar
+  -- and casting bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
   frame.castBar.background:SetVertexColor(0, 0, 0, .4);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
@@ -169,7 +169,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateSecondaryBarBorderTemplate');
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
 
-  -- when using small nameplates move the text below the cast bar
+  -- when using small nameplates move the text below the casting bar
   if (setupOptions.useLargeNameFont) then
     frame.castBar.Text:ClearAllPoints();
     frame.castBar.Text:SetAllPoints(frame.castBar);
@@ -196,7 +196,7 @@ end
 
 function Addon:UpdateHealthBorder(frame)
   if (frame.castBar and frame.castBar.border) then
-    -- color of nameplate cast bar border
+    -- color of nameplate casting bar border
     local r, g, b, a = frame.healthBar.border.r, frame.healthBar.border.g, frame.healthBar.border.b, frame.healthBar.border.a;
 
     if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b or a ~= frame.castBar.border.a) then
