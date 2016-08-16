@@ -289,7 +289,7 @@ function Addon:UpdateName(frame)
         ApplyCastingBarAlpha(nameplate.UnitFrame.castBar, 1);
       else
         -- we have a target but unit has no nameplate
-        -- keep casting bars faded to indicate we have a target selected
+        -- keep casting bars faded to indicate we have a target
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
 
@@ -316,7 +316,7 @@ function Addon:ApplyAlpha(frame, alpha)
         ApplyCastingBarAlpha(frame, (alpha * BAR_FADE_VALUE));
       else
         -- we have a target but unit has no nameplate
-        -- keep casting bars faded to indicate we have a target selected
+        -- keep casting bars faded to indicate we have a target
         ApplyCastingBarAlpha(frame, (alpha * BAR_FADE_VALUE));
       end
     end
