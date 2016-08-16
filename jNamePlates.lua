@@ -91,20 +91,20 @@ function Addon:ConfigNamePlates()
     -- disable the classification indicator on nameplates
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
+    -- set the selected border color on enemy nameplates
+    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+    DefaultCompactNamePlateEnemyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
+    DefaultCompactNamePlateEnemyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
+
+    -- set the selected border color on friendly nameplates
+    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+    DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
+    DefaultCompactNamePlateFriendlyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
+
     -- override any enabled cvar
     C_Timer.After(.1, function ()
         -- disable class colors on enemy nameplates
         DefaultCompactNamePlateEnemyFrameOptions.useClassColors = false;
-
-        -- set the selected border color on enemy nameplates
-        DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
-        DefaultCompactNamePlateEnemyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
-        DefaultCompactNamePlateEnemyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
-
-        -- set the selected border color on friendly nameplates
-        DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
-        DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
-        DefaultCompactNamePlateFriendlyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
       end)
 
     -- always show names on nameplates
