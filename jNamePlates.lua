@@ -149,7 +149,6 @@ do
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
     hooksecurefunc('CompactUnitFrame_UpdateHealthBorder', Frame_UpdateHealthBorder);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
-
     hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha);
   end
 end
