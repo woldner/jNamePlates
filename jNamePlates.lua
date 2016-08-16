@@ -116,7 +116,7 @@ function Addon:ConfigNamePlates()
           'displayNameWhenSelected',
           'displayNameByPlayerNameRules'
         }) do
-        _G['DefaultCompactNamePlate'.. i ..'FrameOptions'][j] = false;
+        _G['DefaultCompactNamePlate' .. i .. 'FrameOptions'][j] = false;
       end
     end
   end
