@@ -4,4 +4,4 @@
 ## Version: 1.0
 ## Author: jwldnr
 
-jNamePlates.lua
+jNamePlates.xml

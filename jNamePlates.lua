@@ -15,15 +15,18 @@ local BAR_FADE_VALUE = .4;
 
 -- helper functions
 local function IsTanking(unit)
-  return select(1, UnitDetailedThreatSituation('player', unit));
+  local isTanking = UnitDetailedThreatSituation('player', unit);
+  return isTanking;
 end
 
 local function InCombat(unit)
-  return (UnitAffectingCombat(unit) and UnitCanAttack('player', unit));
+  local inCombat = UnitAffectingCombat(unit) and UnitCanAttack('player', unit);
+  return inCombat;
 end
 
 local function IsOnThreatList(unit)
-  return select(2, UnitDetailedThreatSituation('player', unit)) ~= nil;
+  local _, threatStatus = UnitDetailedThreatSituation('player', unit);
+  return threatStatus ~= nil;
 end
 
 -- identical to CastingBarFrame_ApplyAlpha
@@ -88,6 +91,11 @@ function Addon:ConfigNamePlates()
     -- enable class colors on friendly nameplates
     DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true;
 
+    -- set the selected border color on friendly nameplates
+    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
+    DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
+    DefaultCompactNamePlateFriendlyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
+
     -- disable the classification indicator on nameplates
     DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
 
@@ -95,11 +103,6 @@ function Addon:ConfigNamePlates()
     DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
     DefaultCompactNamePlateEnemyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
     DefaultCompactNamePlateEnemyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
-
-    -- set the selected border color on friendly nameplates
-    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
-    DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
-    DefaultCompactNamePlateFriendlyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
 
     -- override any enabled cvar
     C_Timer.After(.1, function ()
@@ -160,8 +163,8 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
-  frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
-  -- frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateSecondaryBarBorderTemplate');
+  frame.castBar.barBorder = CreateFrame('Frame', nil, frame.castBar, 'NamePlateCastingBarBorder');
+  frame.castBar.barBorder:SetVertexColor(0, 0, 0, 1);
 
   -- when using small nameplates move the text below the casting bar
   if (setupOptions.useLargeNameFont) then
@@ -261,7 +264,9 @@ function Addon:UpdateName(frame)
       if (nameplate) then
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-        ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
+        if (not UnitCanAttack('player', frame.unit)) then
+          ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
+        end
 
         nameplate.UnitFrame.name:SetAlpha(1);
         nameplate.UnitFrame.healthBar:SetAlpha(1);
@@ -271,22 +276,26 @@ function Addon:UpdateName(frame)
         -- keep casting bars faded to indicate we have a target
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-        ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
+        if (not UnitCanAttack('player', frame.unit)) then
+          ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
+        end
       end
     end
   end
 end
 
 function Addon:ApplyAlpha(frame, alpha)
-  local parent = frame:GetParent();
+  if (not UnitCanAttack('player', frame.unit)) then
+    local parent = frame:GetParent();
 
-  if (parent.healthBar) then
-    local healthBarAlpha = parent.healthBar:GetAlpha();
+    if (parent.healthBar) then
+      local healthBarAlpha = parent.healthBar:GetAlpha();
 
-    -- frame is faded
-    if (not UnitCanAttack('player', frame.unit) and healthBarAlpha == BAR_FADE_VALUE) then
-      local value = (alpha * BAR_FADE_VALUE);
-      ApplyCastingBarAlpha(frame, value);
+      -- frame is faded
+      if (healthBarAlpha == BAR_FADE_VALUE) then
+        local value = (alpha * BAR_FADE_VALUE);
+        ApplyCastingBarAlpha(frame, value);
+      end
     end
   end
 end
