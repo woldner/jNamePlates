@@ -5,3 +5,4 @@
 ## Author: jwldnr
 
 jNamePlates.xml
+jNamePlates.lua
