@@ -26,16 +26,6 @@ local function IsOnThreatList(unit)
   return select(2, UnitDetailedThreatSituation('player', unit)) ~= nil;
 end
 
--- identical to CastingBarFrame_ApplyAlpha
-local function ApplyCastingBarAlpha(frame, alpha)
-  frame:SetAlpha(alpha);
-  if (frame.additionalFadeWidgets) then
-    for widget in pairs(frame.additionalFadeWidgets) do
-      widget:SetAlpha(alpha);
-    end
-  end
-end
-
 -- main
 function Addon:Load()
   do
@@ -71,7 +61,7 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateMaxDistance', 40);
 
     -- stop nameplates from clamping to screen
-    SetCVar('nameplateOtherTopInset', -1);
+    SetCVar('nameplateOtherTopInset', 0);
     SetCVar('nameplateOtherBottomInset', -1);
 
     -- hide class color on health bar for enemy players
@@ -116,7 +106,7 @@ function Addon:ConfigNamePlates()
           'displayNameWhenSelected',
           'displayNameByPlayerNameRules'
         }) do
-        _G['DefaultCompactNamePlate' .. i .. 'FrameOptions'][j] = false;
+        _G['DefaultCompactNamePlate'..i..'FrameOptions'][j] = false;
       end
     end
   end
@@ -132,10 +122,6 @@ do
     Addon:UpdateHealthColor(frame);
   end
 
-  local function Frame_UpdateHealthBorder(frame)
-    Addon:UpdateHealthBorder(frame);
-  end
-
   local function Frame_UpdateName(frame)
     Addon:UpdateName(frame);
   end
@@ -147,7 +133,6 @@ do
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
-    hooksecurefunc('CompactUnitFrame_UpdateHealthBorder', Frame_UpdateHealthBorder);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
     hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha);
   end
@@ -165,8 +150,8 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
-  -- frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateSecondaryBarBorderTemplate');
   frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateFullBorderTemplate');
+  -- frame.castBar.border = CreateFrame('Frame', nil, frame.castBar, 'NamePlateSecondaryBarBorderTemplate');
 
   -- when using small nameplates move the text below the casting bar
   if (setupOptions.useLargeNameFont) then
@@ -193,21 +178,11 @@ function Addon:UpdateHealthColor(frame)
   end
 end
 
-function Addon:UpdateHealthBorder(frame)
-  if (frame.castBar and frame.castBar.border) then
-    -- color of nameplate casting bar border
-    local r, g, b, a = frame.healthBar.border.r, frame.healthBar.border.g, frame.healthBar.border.b, frame.healthBar.border.a;
-
-    if (r ~= frame.castBar.border.r or g ~= frame.castBar.border.g or b ~= frame.castBar.border.b or a ~= frame.castBar.border.a) then
-      frame.castBar.border:SetVertexColor(r, g, b, a);
-    end
-  end
-end
-
 function Addon:UpdateName(frame)
   if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
     local level = UnitLevel(frame.unit);
     local name = GetUnitName(frame.unit, false);
+    local classification = UnitClassification(frame.unit);
 
     if (UnitIsPlayer(frame.unit)) then
       local isPVP = UnitIsPVP(frame.unit);
@@ -216,10 +191,10 @@ function Addon:UpdateName(frame)
       -- set unit player name
       if (InCombat(frame.unit)) then
         -- unit player in combat
-        frame.name:SetText((isPVP and faction) and ICON[faction] .. ' ' .. name .. ' (' .. level .. ') *' or name .. ' (' .. level .. ') *');
+        frame.name:SetText((isPVP and faction) and ICON[faction]..' '..name..' ('..level..') *' or name..' ('..level..') *');
       else
         -- unit player out of combat
-        frame.name:SetText((isPVP and faction) and ICON[faction] .. ' ' .. name .. ' (' .. level .. ')' or name .. ' (' .. level .. ')');
+        frame.name:SetText((isPVP and faction) and ICON[faction]..' '..name..' ('..level..')' or name..' ('..level..')');
       end
 
       -- set unit player name color
@@ -236,9 +211,9 @@ function Addon:UpdateName(frame)
     elseif (level == -1) then
       -- set boss name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name .. ' (??) *');
+        frame.name:SetText((classification ~= 'normal') and name..' (?? '..classification..')' or name..' (??) *');
       else
-        frame.name:SetText(name .. ' (??)');
+        frame.name:SetText((classification ~= 'normal') and name..' (?? '..classification..')' or name..' (??)');
       end
 
       -- set boss name color
@@ -252,9 +227,9 @@ function Addon:UpdateName(frame)
     else
       -- set name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText(name .. ' (' .. level .. ') *');
+        frame.name:SetText((classification ~= 'normal') and name..' ('..level..' '..classification..') *' or name..' ('..level..') *');
       else
-        frame.name:SetText(name .. ' (' .. level .. ')');
+        frame.name:SetText((classification ~= 'normal') and name..' ('..level..' '..classification..')' or name..' ('..level..')');
       end
 
       -- set name color
@@ -270,54 +245,38 @@ function Addon:UpdateName(frame)
     if (UnitGUID('target') == nil) then
       frame.name:SetAlpha(1);
       frame.healthBar:SetAlpha(1);
-
-      ApplyCastingBarAlpha(frame.castBar, 1);
+      CastingBarFrame_ApplyAlpha(frame.castBar, 1);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-
-        if (not UnitCanAttack('player', frame.unit)) then
-          ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
-        end
+        CastingBarFrame_ApplyAlpha(frame.castBar, BAR_FADE_VALUE);
 
         nameplate.UnitFrame.name:SetAlpha(1);
         nameplate.UnitFrame.healthBar:SetAlpha(1);
-
-        ApplyCastingBarAlpha(nameplate.UnitFrame.castBar, 1);
+        CastingBarFrame_ApplyAlpha(nameplate.UnitFrame.castBar, 1);
       else
         -- we have a target but unit has no nameplate
         -- keep casting bars faded to indicate we have a target
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-
-        if (not UnitCanAttack('player', frame.unit)) then
-          ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
-        end
+        CastingBarFrame_ApplyAlpha(frame.castBar, BAR_FADE_VALUE);
       end
     end
   end
 end
 
 function Addon:ApplyAlpha(frame, alpha)
-  if (frame.unit == 'player' or frame.unit == 'target') then return end
+  local parent = frame:GetParent();
 
-  -- unit is friendly
-  if (not UnitCanAttack('player', frame.unit) and alpha > 0) then
-    if (UnitGUID('target') == nil) then
-      ApplyCastingBarAlpha(frame, alpha);
-    else
-      local nameplate = C_NamePlate.GetNamePlateForUnit('target');
-      if (nameplate) then
-        ApplyCastingBarAlpha(nameplate.UnitFrame.castBar, alpha);
+  if (parent.healthBar) then
+    local healthBarAlpha = parent.healthBar:GetAlpha();
 
-        ApplyCastingBarAlpha(frame, (alpha * BAR_FADE_VALUE));
-      else
-        -- we have a target but unit has no nameplate
-        -- keep casting bars faded to indicate we have a target
-        ApplyCastingBarAlpha(frame, (alpha * BAR_FADE_VALUE));
-      end
+    -- frame is faded
+    if (healthBarAlpha < 1) then
+      alpha = (alpha * healthBarAlpha);
+      CastingBarFrame_ApplyAlpha(frame, alpha);
     end
   end
 end
