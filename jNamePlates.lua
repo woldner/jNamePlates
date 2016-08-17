@@ -278,15 +278,17 @@ function Addon:UpdateName(frame)
 end
 
 function Addon:ApplyAlpha(frame, alpha)
-  local parent = frame:GetParent();
+  if (not UnitCanAttack('player', frame.unit)) then
+    local parent = frame:GetParent();
 
-  if (parent.healthBar) then
-    local healthBarAlpha = parent.healthBar:GetAlpha();
+    if (parent.healthBar) then
+      local healthBarAlpha = parent.healthBar:GetAlpha();
 
-    -- frame is faded
-    if (not UnitCanAttack('player', frame.unit) and healthBarAlpha == BAR_FADE_VALUE) then
-      local value = (alpha * BAR_FADE_VALUE);
-      ApplyCastingBarAlpha(frame, value);
+      -- frame is faded
+      if (healthBarAlpha == BAR_FADE_VALUE) then
+        local value = (alpha * BAR_FADE_VALUE);
+        ApplyCastingBarAlpha(frame, value);
+      end
     end
   end
 end
