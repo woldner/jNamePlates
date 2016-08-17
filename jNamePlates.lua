@@ -26,6 +26,16 @@ local function IsOnThreatList(unit)
   return select(2, UnitDetailedThreatSituation('player', unit)) ~= nil;
 end
 
+-- identical to CastingBarFrame_ApplyAlpha
+local function ApplyCastingBarAlpha(frame, alpha)
+  frame:SetAlpha(alpha);
+  if (frame.additionalFadeWidgets) then
+    for widget in pairs(frame.additionalFadeWidgets) do
+      widget:SetAlpha(alpha);
+    end
+  end
+end
+
 -- main
 function Addon:Load()
   do
@@ -245,23 +255,23 @@ function Addon:UpdateName(frame)
     if (UnitGUID('target') == nil) then
       frame.name:SetAlpha(1);
       frame.healthBar:SetAlpha(1);
-      CastingBarFrame_ApplyAlpha(frame.castBar, 1);
+      ApplyCastingBarAlpha(frame.castBar, 1);
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-        CastingBarFrame_ApplyAlpha(frame.castBar, BAR_FADE_VALUE);
+        ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
 
         nameplate.UnitFrame.name:SetAlpha(1);
         nameplate.UnitFrame.healthBar:SetAlpha(1);
-        CastingBarFrame_ApplyAlpha(nameplate.UnitFrame.castBar, 1);
+        ApplyCastingBarAlpha(nameplate.UnitFrame.castBar, 1);
       else
         -- we have a target but unit has no nameplate
         -- keep casting bars faded to indicate we have a target
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-        CastingBarFrame_ApplyAlpha(frame.castBar, BAR_FADE_VALUE);
+        ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
       end
     end
   end
@@ -274,9 +284,9 @@ function Addon:ApplyAlpha(frame, alpha)
     local healthBarAlpha = parent.healthBar:GetAlpha();
 
     -- frame is faded
-    if (healthBarAlpha < 1) then
-      alpha = (alpha * healthBarAlpha);
-      CastingBarFrame_ApplyAlpha(frame, alpha);
+    if (healthBarAlpha == BAR_FADE_VALUE) then
+      local fade = (alpha * BAR_FADE_VALUE);
+      ApplyCastingBarAlpha(frame, fade);
     end
   end
 end
