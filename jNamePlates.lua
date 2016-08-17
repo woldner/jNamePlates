@@ -285,8 +285,8 @@ function Addon:ApplyAlpha(frame, alpha)
 
     -- frame is faded
     if (healthBarAlpha == BAR_FADE_VALUE) then
-      local fade = (alpha * BAR_FADE_VALUE);
-      ApplyCastingBarAlpha(frame, fade);
+      local value = (alpha * BAR_FADE_VALUE);
+      ApplyCastingBarAlpha(frame, value);
     end
   end
 end
