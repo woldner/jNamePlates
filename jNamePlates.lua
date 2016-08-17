@@ -10,8 +10,8 @@ local ICON = {
   Horde = '\124TInterface/PVPFrame/PVP-Currency-Horde:16\124t'
 }
 
-local NAME_FADE_VALUE = .6;
-local BAR_FADE_VALUE = .4;
+local NAMEPLATE_NAME_ALPHA = .6;
+local NAMEPLATE_BAR_ALPHA = .4;
 
 -- helper functions
 local function IsTanking(unit)
@@ -259,9 +259,9 @@ function Addon:UpdateName(frame)
     else
       local nameplate = C_NamePlate.GetNamePlateForUnit('target');
       if (nameplate) then
-        frame.name:SetAlpha(NAME_FADE_VALUE);
-        frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-        ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
+        frame.name:SetAlpha(NAMEPLATE_NAME_ALPHA);
+        frame.healthBar:SetAlpha(NAMEPLATE_BAR_ALPHA);
+        ApplyCastingBarAlpha(frame.castBar, NAMEPLATE_BAR_ALPHA);
 
         nameplate.UnitFrame.name:SetAlpha(1);
         nameplate.UnitFrame.healthBar:SetAlpha(1);
@@ -269,9 +269,9 @@ function Addon:UpdateName(frame)
       else
         -- we have a target but unit has no nameplate
         -- keep casting bars faded to indicate we have a target
-        frame.name:SetAlpha(NAME_FADE_VALUE);
-        frame.healthBar:SetAlpha(BAR_FADE_VALUE);
-        ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
+        frame.name:SetAlpha(NAMEPLATE_NAME_ALPHA);
+        frame.healthBar:SetAlpha(NAMEPLATE_BAR_ALPHA);
+        ApplyCastingBarAlpha(frame.castBar, NAMEPLATE_BAR_ALPHA);
       end
     end
   end
@@ -285,8 +285,8 @@ function Addon:ApplyAlpha(frame, alpha)
       local healthBarAlpha = parent.healthBar:GetAlpha();
 
       -- frame is faded
-      if (healthBarAlpha == BAR_FADE_VALUE) then
-        local value = (alpha * BAR_FADE_VALUE);
+      if (healthBarAlpha == NAMEPLATE_BAR_ALPHA) then
+        local value = (alpha * NAMEPLATE_BAR_ALPHA);
         ApplyCastingBarAlpha(frame, value);
       end
     end
