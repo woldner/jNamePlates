@@ -284,7 +284,7 @@ function Addon:ApplyAlpha(frame, alpha)
     local healthBarAlpha = parent.healthBar:GetAlpha();
 
     -- frame is faded
-    if (healthBarAlpha == BAR_FADE_VALUE) then
+    if (not UnitCanAttack('player', frame.unit) and healthBarAlpha == BAR_FADE_VALUE) then
       local value = (alpha * BAR_FADE_VALUE);
       ApplyCastingBarAlpha(frame, value);
     end
