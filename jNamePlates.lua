@@ -16,7 +16,7 @@ local BAR_FADE_VALUE = .4;
 
 local BAR_BACKDROP = {
   bgFile = nil,
-  edgeFile = 'Interface\\AddOns\\jNamePlates\\Textures\\GlowTexture',
+  edgeFile = 'Interface\\AddOns\\jNamePlates\\Textures\\BarBackdrop',
   tile = false,
   edgeSize = 4,
   insets = {
