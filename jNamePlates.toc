@@ -1,7 +1,7 @@
 ## Interface: 70000
 ## Title: jNamePlates
 ## Notes: Color the name plate of unit targeting us
-## Version: 1.0
+## Version: 1.2
 ## Author: jwldnr
 
 jNamePlates.lua
