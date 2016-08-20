@@ -162,103 +162,6 @@ function Addon:ConfigNamePlates()
   end
 end
 
-function Addon:CreateCastingBarBorder(frame)
-  local NamePlateCastingBarBorder = {};
-  NamePlateCastingBarBorder.textures = {};
-
-  -- first top
-  NamePlateCastingBarBorder.textures.firstTopBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.firstTopBorder:SetPoint('BOTTOMRIGHT', frame.castBar, 'TOPRIGHT');
-  NamePlateCastingBarBorder.textures.firstTopBorder:SetPoint('BOTTOMLEFT', frame.castBar, 'TOPLEFT');
-  NamePlateCastingBarBorder.textures.firstTopBorder:SetHeight(2);
-  NamePlateCastingBarBorder.textures.firstTopBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- first right
-  NamePlateCastingBarBorder.textures.firstRightBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.firstRightBorder:SetPoint('TOPLEFT', frame.castBar, 'TOPRIGHT', 0, 2);
-  NamePlateCastingBarBorder.textures.firstRightBorder:SetPoint('BOTTOMLEFT', frame.castBar, 'BOTTOMRIGHT', 0, -2);
-  NamePlateCastingBarBorder.textures.firstRightBorder:SetWidth(2);
-  NamePlateCastingBarBorder.textures.firstRightBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- first bottom
-  NamePlateCastingBarBorder.textures.firstBottomBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.firstBottomBorder:SetPoint('TOPRIGHT', frame.castBar, 'BOTTOMLEFT');
-  NamePlateCastingBarBorder.textures.firstBottomBorder:SetPoint('TOPLEFT', frame.castBar, 'BOTTOMRIGHT');
-  NamePlateCastingBarBorder.textures.firstBottomBorder:SetHeight(2);
-  NamePlateCastingBarBorder.textures.firstBottomBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- first left
-  NamePlateCastingBarBorder.textures.firstLeftBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.firstLeftBorder:SetPoint('TOPRIGHT', frame.castBar, 'TOPLEFT', 0, 2);
-  NamePlateCastingBarBorder.textures.firstLeftBorder:SetPoint('BOTTOMRIGHT', frame.castBar, 'BOTTOMLEFT', 0, -2);
-  NamePlateCastingBarBorder.textures.firstLeftBorder:SetWidth(2);
-  NamePlateCastingBarBorder.textures.firstLeftBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- second top
-  NamePlateCastingBarBorder.textures.secondTopBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.secondTopBorder:SetPoint('BOTTOMRIGHT', frame.castBar, 'TOPRIGHT');
-  NamePlateCastingBarBorder.textures.secondTopBorder:SetPoint('BOTTOMLEFT', frame.castBar, 'TOPLEFT');
-  NamePlateCastingBarBorder.textures.secondTopBorder:SetHeight(1.5);
-  NamePlateCastingBarBorder.textures.secondTopBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- second right
-  NamePlateCastingBarBorder.textures.secondRightBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.secondRightBorder:SetPoint('TOPLEFT', frame.castBar, 'TOPRIGHT', 0, 1.5);
-  NamePlateCastingBarBorder.textures.secondRightBorder:SetPoint('BOTTOMLEFT', frame.castBar, 'BOTTOMRIGHT', 0, -1.5);
-  NamePlateCastingBarBorder.textures.secondRightBorder:SetWidth(1.5);
-  NamePlateCastingBarBorder.textures.secondRightBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- second bottom
-  NamePlateCastingBarBorder.textures.secondBottomBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.secondBottomBorder:SetPoint('TOPRIGHT', frame.castBar, 'BOTTOMLEFT');
-  NamePlateCastingBarBorder.textures.secondBottomBorder:SetPoint('TOPLEFT', frame.castBar, 'BOTTOMRIGHT');
-  NamePlateCastingBarBorder.textures.secondBottomBorder:SetHeight(1.5);
-  NamePlateCastingBarBorder.textures.secondBottomBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- second left
-  NamePlateCastingBarBorder.textures.secondLeftBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.secondLeftBorder:SetPoint('TOPRIGHT', frame.castBar, 'TOPLEFT', 0, 1.5);
-  NamePlateCastingBarBorder.textures.secondLeftBorder:SetPoint('BOTTOMRIGHT', frame.castBar, 'BOTTOMLEFT', 0, -1.5);
-  NamePlateCastingBarBorder.textures.secondLeftBorder:SetWidth(1.5);
-  NamePlateCastingBarBorder.textures.secondLeftBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- third top
-  NamePlateCastingBarBorder.textures.thirdTopBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.thirdTopBorder:SetPoint('BOTTOMRIGHT', frame.castBar, 'TOPRIGHT');
-  NamePlateCastingBarBorder.textures.thirdTopBorder:SetPoint('BOTTOMLEFT', frame.castBar, 'TOPLEFT');
-  NamePlateCastingBarBorder.textures.thirdTopBorder:SetHeight(1);
-  NamePlateCastingBarBorder.textures.thirdTopBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- third right
-  NamePlateCastingBarBorder.textures.thirdRightBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.thirdRightBorder:SetPoint('TOPLEFT', frame.castBar, 'TOPRIGHT', 0, 1);
-  NamePlateCastingBarBorder.textures.thirdRightBorder:SetPoint('BOTTOMLEFT', frame.castBar, 'BOTTOMRIGHT', 0, -1);
-  NamePlateCastingBarBorder.textures.thirdRightBorder:SetWidth(1);
-  NamePlateCastingBarBorder.textures.thirdRightBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- third bottom
-  NamePlateCastingBarBorder.textures.thirdBottomBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.thirdBottomBorder:SetPoint('TOPRIGHT', frame.castBar, 'BOTTOMLEFT');
-  NamePlateCastingBarBorder.textures.thirdBottomBorder:SetPoint('TOPLEFT', frame.castBar, 'BOTTOMRIGHT');
-  NamePlateCastingBarBorder.textures.thirdBottomBorder:SetHeight(1);
-  NamePlateCastingBarBorder.textures.thirdBottomBorder:SetColorTexture(0, 0, 0, .2);
-
-  -- third left
-  NamePlateCastingBarBorder.textures.thirdLeftBorder = frame.castBar:CreateTexture(nil, 'BACKGROUND', -8);
-  NamePlateCastingBarBorder.textures.thirdLeftBorder:SetPoint('TOPRIGHT', frame.castBar, 'TOPLEFT', 0, 1);
-  NamePlateCastingBarBorder.textures.thirdLeftBorder:SetPoint('BOTTOMRIGHT', frame.castBar, 'BOTTOMLEFT', 0, -1);
-  NamePlateCastingBarBorder.textures.thirdLeftBorder:SetWidth(1);
-  NamePlateCastingBarBorder.textures.thirdLeftBorder:SetColorTexture(0, 0, 0, .2);
-
-  function NamePlateCastingBarBorder:SetColorTexture(...) return end
-
-  function NamePlateCastingBarBorder:SetVertexColor(...) return end
-
-  function NamePlateCastingBarBorder:SetAlpha(...) return end
-
-  return NamePlateCastingBarBorder;
-end
-
 -- hooks
 do
   local function Frame_SetupNamePlateInternal(frame, setupOptions, frameOptions)
@@ -298,9 +201,10 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   end
   wipe(frame.healthBar.border.Textures);
 
+  -- create a new border around the health bar
   SetBackdrop(frame.healthBar, BAR_BACKDROP);
   frame.healthBar:SetBackdropColor(1, 1, 1, 1);
-  frame.healthBar:SetBackdropBorderColor(0, 0, 0, .85);
+  frame.healthBar:SetBackdropBorderColor(0, 0, 0, .8);
 
   -- and casting bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
@@ -310,7 +214,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- create a border from template just like the one around the health bar
   SetBackdrop(frame.castBar, BAR_BACKDROP);
   frame.castBar:SetBackdropColor(1, 1, 1, 1);
-  frame.castBar:SetBackdropBorderColor(0, 0, 0, .85);
+  frame.castBar:SetBackdropBorderColor(0, 0, 0, .8);
 
   -- when using small nameplates move the text below the casting bar
   if (setupOptions.useLargeNameFont) then
