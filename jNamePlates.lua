@@ -6,8 +6,8 @@ local pairs = pairs;
 local strfind = string.find;
 
 -- wow API
+local CreateColor = CreateColor;
 local GetUnitName = GetUnitName;
-local InCombat = InCombat;
 local InCombatLockdown = InCombatLockdown;
 local ShouldShowName = ShouldShowName;
 local UnitAffectingCombat = UnitAffectingCombat;
@@ -22,6 +22,7 @@ local UnitIsEnemy = UnitIsEnemy;
 local UnitIsPlayer = UnitIsPlayer;
 local UnitIsPVP = UnitIsPVP;
 local UnitLevel = UnitLevel;
+local SetCVar = SetCVar;
 local wipe = wipe;
 
 -- constants
