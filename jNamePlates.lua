@@ -1,11 +1,10 @@
+-- locals and speed
 local AddonName, Addon = ...;
 
--- lua API
 local _G = _G;
 local pairs = pairs;
 local strfind = string.find;
 
--- wow API
 local CreateColor = CreateColor;
 local GetUnitName = GetUnitName;
 local InCombatLockdown = InCombatLockdown;
