@@ -1,10 +1,30 @@
--- locals and speed
 local AddonName, Addon = ...;
 
+-- lua API
 local _G = _G;
 local pairs = pairs;
 local strfind = string.find;
 
+-- wow API
+local GetUnitName = GetUnitName;
+local InCombat = InCombat;
+local InCombatLockdown = InCombatLockdown;
+local ShouldShowName = ShouldShowName;
+local UnitAffectingCombat = UnitAffectingCombat;
+local UnitCanAttack = UnitCanAttack;
+local UnitClass = UnitClass;
+local UnitClassification = UnitClassification;
+local UnitDetailedThreatSituation = UnitDetailedThreatSituation;
+local UnitExists = UnitExists;
+local UnitFactionGroup = UnitFactionGroup;
+local UnitGUID = UnitGUID;
+local UnitIsEnemy = UnitIsEnemy;
+local UnitIsPlayer = UnitIsPlayer;
+local UnitIsPVP = UnitIsPVP;
+local UnitLevel = UnitLevel;
+local wipe = wipe;
+
+-- constants
 local CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS;
 local ICON = {
   Alliance = '\124TInterface/PVPFrame/PVP-Currency-Alliance:16\124t',
@@ -14,9 +34,9 @@ local ICON = {
 local NAME_FADE_VALUE = .6;
 local BAR_FADE_VALUE = .4;
 
-local BAR_BACKDROP = {
+local BACKDROP = {
   bgFile = nil,
-  edgeFile = 'Interface\\AddOns\\jNamePlates\\Textures\\BarBackdrop',
+  edgeFile = 'Interface\\AddOns\\jNamePlates\\Textures\\Border_Glow',
   tile = false,
   edgeSize = 4,
   insets = {
@@ -110,7 +130,7 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateMaxDistance', 40);
 
     -- stop nameplates from clamping to screen
-    SetCVar('nameplateOtherTopInset', 0);
+    SetCVar('nameplateOtherTopInset', -1);
     SetCVar('nameplateOtherBottomInset', -1);
 
     -- hide class color on health bar for enemy players
@@ -195,13 +215,13 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 
   -- remove default health bar border
   frame.healthBar.border:Hide();
-  for _, texture in ipairs(frame.healthBar.border.Textures) do
+  for _, texture in pairs(frame.healthBar.border.Textures) do
     texture:SetTexture(nil);
   end
   wipe(frame.healthBar.border.Textures);
 
   -- create a new border around the health bar
-  SetBackdrop(frame.healthBar, BAR_BACKDROP);
+  SetBackdrop(frame.healthBar, BACKDROP);
   frame.healthBar:SetBackdropColor(1, 1, 1, 1);
   frame.healthBar:SetBackdropBorderColor(0, 0, 0, .8);
 
@@ -211,7 +231,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border from template just like the one around the health bar
-  SetBackdrop(frame.castBar, BAR_BACKDROP);
+  SetBackdrop(frame.castBar, BACKDROP);
   frame.castBar:SetBackdropColor(1, 1, 1, 1);
   frame.castBar:SetBackdropBorderColor(0, 0, 0, .8);
 
