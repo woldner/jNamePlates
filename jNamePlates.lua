@@ -210,7 +210,7 @@ end
 function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.healthBar.background:SetVertexColor(0, 0, 0, .4);
+  frame.healthBar.background:SetVertexColor(0, 0, 0, .5);
   frame.healthBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- remove default health bar border
@@ -223,17 +223,17 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- create a new border around the health bar
   SetBackdrop(frame.healthBar, BACKDROP);
   frame.healthBar:SetBackdropColor(1, 1, 1, 1);
-  frame.healthBar:SetBackdropBorderColor(0, 0, 0, .8);
+  frame.healthBar:SetBackdropBorderColor(0, 0, 0, .9);
 
   -- and casting bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
-  frame.castBar.background:SetVertexColor(0, 0, 0, .4);
+  frame.castBar.background:SetVertexColor(0, 0, 0, .5);
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
-  -- create a border from template just like the one around the health bar
+  -- create a border just like the one around the health bar
   SetBackdrop(frame.castBar, BACKDROP);
   frame.castBar:SetBackdropColor(1, 1, 1, 1);
-  frame.castBar:SetBackdropBorderColor(0, 0, 0, .8);
+  frame.castBar:SetBackdropBorderColor(0, 0, 0, .9);
 
   -- when using small nameplates move the text below the casting bar
   if (setupOptions.useLargeNameFont) then
