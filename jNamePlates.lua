@@ -39,12 +39,7 @@ local BACKDROP = {
   edgeFile = 'Interface\\AddOns\\jNamePlates\\Textures\\Border_Glow',
   tile = false,
   edgeSize = 4,
-  insets = {
-    left = 0,
-    right = 0,
-    top = 0,
-    bottom = 0
-  }
+  insets = { left = 0, right = 0, top = 0, bottom = 0 }
 }
 
 -- helper functions
@@ -130,7 +125,7 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateMaxDistance', 40);
 
     -- stop nameplates from clamping to screen
-    SetCVar('nameplateOtherTopInset', -1);
+    SetCVar('nameplateOtherTopInset', 0);
     SetCVar('nameplateOtherBottomInset', -1);
 
     -- hide class color on health bar for enemy players
@@ -223,7 +218,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- create a new border around the health bar
   SetBackdrop(frame.healthBar, BACKDROP);
   frame.healthBar:SetBackdropColor(1, 1, 1, 1);
-  frame.healthBar:SetBackdropBorderColor(0, 0, 0, .9);
+  frame.healthBar:SetBackdropBorderColor(0, 0, 0, 1);
 
   -- and casting bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
@@ -233,7 +228,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- create a border just like the one around the health bar
   SetBackdrop(frame.castBar, BACKDROP);
   frame.castBar:SetBackdropColor(1, 1, 1, 1);
-  frame.castBar:SetBackdropBorderColor(0, 0, 0, .9);
+  frame.castBar:SetBackdropBorderColor(0, 0, 0, 1);
 
   -- when using small nameplates move the text below the casting bar
   if (setupOptions.useLargeNameFont) then
