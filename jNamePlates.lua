@@ -6,6 +6,7 @@ local pairs = pairs;
 local strfind = string.find;
 
 local CreateColor = CreateColor;
+local CreateFrame = CreateFrame;
 local GetUnitName = GetUnitName;
 local InCombatLockdown = InCombatLockdown;
 local ShouldShowName = ShouldShowName;
@@ -34,14 +35,6 @@ local ICON = {
 local NAME_FADE_VALUE = .6;
 local BAR_FADE_VALUE = .4;
 
-local BACKDROP = {
-  bgFile = nil,
-  edgeFile = 'Interface\\AddOns\\jNamePlates\\Textures\\Border_Glow',
-  tile = false,
-  edgeSize = 4,
-  insets = { left = 0, right = 0, top = 0, bottom = 0 }
-}
-
 -- helper functions
 local function IsTanking(unit)
   local isTanking = UnitDetailedThreatSituation('player', unit);
@@ -68,26 +61,37 @@ local function ApplyCastingBarAlpha(frame, alpha)
   end
 end
 
-local function SetBackdrop(frame, backdrop)
-  frame:SetBackdrop(backdrop);
-  local offset = backdrop.edgeSize;
+local function CreateOutline(frame)
+  local layers = 3;
+  local size = 2;
 
-  for _, texture in pairs({
-      frame:GetRegions()
-    }) do
-    for i = 1, texture:GetNumPoints() do
-      if (texture:GetObjectType() == 'Texture' and texture:GetTexture() == backdrop.edgeFile) then
-        local point, relativeTo, relativePoint, xOfs, yOfs = texture:GetPoint(i);
+  local outline = {};
 
-        if (strfind(point, 'TOP', 1, true)) then yOfs = yOfs + offset end
-        if (strfind(point, 'BOTTOM', 1, true)) then yOfs = yOfs - offset end
-        if (strfind(point, 'LEFT', 1, true)) then xOfs = xOfs - offset end
-        if (strfind(point, 'RIGHT', 1, true)) then xOfs = xOfs + offset end
+  for i = 1, layers do
+    local offset = size;
 
-        texture:SetPoint(point, relativeTo, relativePoint, xOfs, yOfs);
-      end
-    end
+    local layer = CreateFrame('Frame', nil, frame);
+    layer:SetFrameStrata('LOW');
+    layer:SetPoint('TOPRIGHT', offset, offset);
+    layer:SetPoint('BOTTOMLEFT', -offset, -offset);
+    layer:SetBackdrop({
+        bgFile = nil,
+        edgeFile = [[Interface\Buttons\WHITE8x8]],
+        tile = false,
+        edgeSize = size,
+        insets = { left = 0, right = 0, top = 0, bottom = 0 }
+      });
+    layer:SetBackdropBorderColor(0, 0, 0, (1 / layers));
+
+    size = size - .5;
+
+    outline[#outline + 1] = layer;
   end
+
+  return outline;
+end
+
+local function AbbrClassification()
 end
 
 -- main
@@ -125,7 +129,7 @@ function Addon:ConfigNamePlates()
     SetCVar('nameplateMaxDistance', 40);
 
     -- stop nameplates from clamping to screen
-    SetCVar('nameplateOtherTopInset', 0);
+    SetCVar('nameplateOtherTopInset', -1);
     SetCVar('nameplateOtherBottomInset', -1);
 
     -- hide class color on health bar for enemy players
@@ -216,9 +220,9 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   wipe(frame.healthBar.border.Textures);
 
   -- create a new border around the health bar
-  SetBackdrop(frame.healthBar, BACKDROP);
-  frame.healthBar:SetBackdropColor(1, 1, 1, 1);
-  frame.healthBar:SetBackdropBorderColor(0, 0, 0, 1);
+  if (not frame.healthBar.outline) then
+    frame.healthBar.outline = CreateOutline(frame.healthBar);
+  end
 
   -- and casting bar
   frame.castBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar');
@@ -226,15 +230,12 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border just like the one around the health bar
-  SetBackdrop(frame.castBar, BACKDROP);
-  frame.castBar:SetBackdropColor(1, 1, 1, 1);
-  frame.castBar:SetBackdropBorderColor(0, 0, 0, 1);
+  if (not frame.castBar.outline) then
+    frame.castBar.outline = CreateOutline(frame.castBar);
+  end
 
   -- when using small nameplates move the text below the casting bar
-  if (setupOptions.useLargeNameFont) then
-    frame.castBar.Text:ClearAllPoints();
-    frame.castBar.Text:SetAllPoints(frame.castBar);
-  else
+  if (not setupOptions.useLargeNameFont) then
     frame.castBar.Text:ClearAllPoints();
     frame.castBar.Text:SetPoint('CENTER', frame.castBar, 'CENTER', 0, -16);
   end
@@ -244,7 +245,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 end
 
 function Addon:UpdateHealthColor(frame)
-  if ((UnitExists(frame.unit) or UnitExists(frame.displayedUnit)) and frame.isTanking or IsTanking(frame.displayedUnit)) then
+  if ((UnitExists(frame.unit) or UnitExists(frame.displayedUnit)) and IsTanking(frame.displayedUnit)) then
     -- color of name plate of unit targeting us
     local r, g, b = 1, 0, 1;
 
