@@ -91,7 +91,11 @@ local function CreateOutline(frame)
   return outline;
 end
 
-local function AbbrClassification()
+local function AbbrClassification(classification)
+  return (classification == 'elite') and '+' or
+  (classification == 'minus') and '-' or
+  (classification == 'rare') and 'r' or
+  (classification == 'rareelite') and 'r+';
 end
 
 -- main
@@ -261,6 +265,7 @@ function Addon:UpdateName(frame)
     local level = UnitLevel(frame.unit);
     local name = GetUnitName(frame.unit, false);
     local classification = UnitClassification(frame.unit);
+    local classificationAbbr = AbbrClassification(classification);
 
     if (UnitIsPlayer(frame.unit)) then
       local isPVP = UnitIsPVP(frame.unit);
@@ -269,7 +274,7 @@ function Addon:UpdateName(frame)
       -- set unit player name
       if (InCombat(frame.unit)) then
         -- unit player in combat
-        frame.name:SetText((isPVP and faction) and ICON[faction]..' '..name..' ('..level..') *' or name..' ('..level..') *');
+        frame.name:SetText((isPVP and faction) and ICON[faction]..' '..name..' ('..level..') **' or name..' ('..level..') **');
       else
         -- unit player out of combat
         frame.name:SetText((isPVP and faction) and ICON[faction]..' '..name..' ('..level..')' or name..' ('..level..')');
@@ -289,9 +294,9 @@ function Addon:UpdateName(frame)
     elseif (level == -1) then
       -- set boss name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText((classification ~= 'normal') and name..' (?? '..classification..')' or name..' (??) *');
+        frame.name:SetText(name..' (??) **');
       else
-        frame.name:SetText((classification ~= 'normal') and name..' (?? '..classification..')' or name..' (??)');
+        frame.name:SetText(name..' (??)');
       end
 
       -- set boss name color
@@ -305,9 +310,9 @@ function Addon:UpdateName(frame)
     else
       -- set name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText((classification ~= 'normal') and name..' ('..level..' '..classification..') *' or name..' ('..level..') *');
+        frame.name:SetText(classificationAbbr and name..' ('..level..' '..classificationAbbr..') **' or name..' ('..level..') **');
       else
-        frame.name:SetText((classification ~= 'normal') and name..' ('..level..' '..classification..')' or name..' ('..level..')');
+        frame.name:SetText(classificationAbbr and name..' ('..level..' '..classificationAbbr..')' or name..' ('..level..')');
       end
 
       -- set name color
