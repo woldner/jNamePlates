@@ -349,7 +349,7 @@ function Addon:ApplyAlpha(frame, alpha)
 end
 
 function Addon:CreateBorder(frame)
-  local border = {};
+  local textures = {};
 
   local layers = 3;
   local size = 2;
@@ -357,19 +357,19 @@ function Addon:CreateBorder(frame)
   for i = 1, layers do
     local backdrop = GetBorderBackdrop(size);
 
-    local layer = CreateFrame('Frame', nil, frame);
-    layer:SetBackdrop(backdrop);
-    layer:SetPoint('TOPRIGHT', size, size);
-    layer:SetPoint('BOTTOMLEFT', -size, -size);
-    layer:SetFrameStrata('LOW');
-    layer:SetBackdropBorderColor(0, 0, 0, (1 / layers));
+    local texture = CreateFrame('Frame', nil, frame);
+    texture:SetBackdrop(backdrop);
+    texture:SetPoint('TOPRIGHT', size, size);
+    texture:SetPoint('BOTTOMLEFT', -size, -size);
+    texture:SetFrameStrata('LOW');
+    texture:SetBackdropBorderColor(0, 0, 0, (1 / layers));
 
     size = size - .5;
 
-    border[#border + 1] = layer;
+    textures[#textures + 1] = texture;
   end
 
-  return border;
+  return textures;
 end
 
 -- call
