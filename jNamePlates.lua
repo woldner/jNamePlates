@@ -2,6 +2,7 @@
 local AddonName, Addon = ...;
 
 local _G = _G;
+local select = select;
 local pairs = pairs;
 local strfind = string.find;
 
@@ -37,18 +38,15 @@ local BAR_FADE_VALUE = .4;
 
 -- helper functions
 local function IsTanking(unit)
-  local isTanking = UnitDetailedThreatSituation('player', unit);
-  return isTanking;
+  return select(1, UnitDetailedThreatSituation('player', unit));
 end
 
 local function InCombat(unit)
-  local inCombat = UnitAffectingCombat(unit) and UnitCanAttack('player', unit);
-  return inCombat;
+  return UnitAffectingCombat(unit) and UnitCanAttack('player', unit);
 end
 
 local function IsOnThreatList(unit)
-  local _, threatStatus = UnitDetailedThreatSituation('player', unit);
-  return threatStatus ~= nil;
+  return select(2, UnitDetailedThreatSituation('player', unit)) ~= nil;
 end
 
 -- identical to CastingBarFrame_ApplyAlpha
@@ -61,34 +59,14 @@ local function ApplyCastingBarAlpha(frame, alpha)
   end
 end
 
-local function CreateOutline(frame)
-  local layers = 3;
-  local size = 2;
-
-  local outline = {};
-
-  for i = 1, layers do
-    local offset = size;
-
-    local layer = CreateFrame('Frame', nil, frame);
-    layer:SetFrameStrata('LOW');
-    layer:SetPoint('TOPRIGHT', offset, offset);
-    layer:SetPoint('BOTTOMLEFT', -offset, -offset);
-    layer:SetBackdrop({
-        bgFile = nil,
-        edgeFile = [[Interface\Buttons\WHITE8x8]],
-        tile = false,
-        edgeSize = size,
-        insets = { left = 0, right = 0, top = 0, bottom = 0 }
-      });
-    layer:SetBackdropBorderColor(0, 0, 0, (1 / layers));
-
-    size = size - .5;
-
-    outline[#outline + 1] = layer;
-  end
-
-  return outline;
+local function GetBorderBackdrop(size)
+  return {
+    bgFile = nil,
+    edgeFile = 'Interface\\Buttons\\WHITE8x8',
+    tile = false,
+    edgeSize = size,
+    insets = { left = 0, right = 0, top = 0, bottom = 0 }
+  };
 end
 
 local function AbbrClassification(classification)
@@ -224,8 +202,8 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   wipe(frame.healthBar.border.Textures);
 
   -- create a new border around the health bar
-  if (not frame.healthBar.outline) then
-    frame.healthBar.outline = CreateOutline(frame.healthBar);
+  if (not frame.healthBar.barBorder) then
+    frame.healthBar.barBorder = self:CreateBorder(frame.healthBar);
   end
 
   -- and casting bar
@@ -234,8 +212,8 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   frame.castBar:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar');
 
   -- create a border just like the one around the health bar
-  if (not frame.castBar.outline) then
-    frame.castBar.outline = CreateOutline(frame.castBar);
+  if (not frame.castBar.barBorder) then
+    frame.castBar.barBorder = self:CreateBorder(frame.castBar);
   end
 
   -- when using small nameplates move the text below the casting bar
@@ -368,6 +346,30 @@ function Addon:ApplyAlpha(frame, alpha)
       end
     end
   end
+end
+
+function Addon:CreateBorder(frame)
+  local border = {};
+
+  local layers = 3;
+  local size = 2;
+
+  for i = 1, layers do
+    local backdrop = GetBorderBackdrop(size);
+
+    local layer = CreateFrame('Frame', nil, frame);
+    layer:SetBackdrop(backdrop);
+    layer:SetPoint('TOPRIGHT', size, size);
+    layer:SetPoint('BOTTOMLEFT', -size, -size);
+    layer:SetFrameStrata('LOW');
+    layer:SetBackdropBorderColor(0, 0, 0, (1 / layers));
+
+    size = size - .5;
+
+    border[#border + 1] = layer;
+  end
+
+  return border;
 end
 
 -- call
