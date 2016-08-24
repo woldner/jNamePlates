@@ -229,7 +229,7 @@ end
 function Addon:UpdateHealthColor(frame)
   if ((UnitExists(frame.unit) or UnitExists(frame.displayedUnit)) and IsTanking(frame.displayedUnit)) then
     -- color of name plate of unit targeting us
-    local r, g, b = 1, 0, 1;
+    local r, g, b = 1, .3, 1;
 
     if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
       frame.healthBar:SetStatusBarColor(r, g, b);
