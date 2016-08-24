@@ -288,9 +288,9 @@ function Addon:UpdateName(frame)
     else
       -- set name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText(classificationAbbr and name..' ('..level..' '..classificationAbbr..') **' or name..' ('..level..') **');
+        frame.name:SetText(classificationAbbr and name..' ('..level..classificationAbbr..') **' or name..' ('..level..') **');
       else
-        frame.name:SetText(classificationAbbr and name..' ('..level..' '..classificationAbbr..')' or name..' ('..level..')');
+        frame.name:SetText(classificationAbbr and name..' ('..level..classificationAbbr..')' or name..' ('..level..')');
       end
 
       -- set name color
