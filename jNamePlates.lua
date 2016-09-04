@@ -227,9 +227,12 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 end
 
 function Addon:UpdateHealthColor(frame)
-  if ((UnitExists(frame.unit) or UnitExists(frame.displayedUnit)) and IsTanking(frame.displayedUnit)) then
+  if (UnitExists(frame.displayedUnit) and IsTanking(frame.displayedUnit)) then
     -- color of name plate of unit targeting us
     local r, g, b = 1, .3, 1;
+    if (CompactUnitFrame_IsTapDenied(frame)) then
+      r, g, b = r / 2, g / 2, b / 2;
+    end
 
     if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
       frame.healthBar:SetStatusBarColor(r, g, b);
