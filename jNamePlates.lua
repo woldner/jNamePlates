@@ -222,8 +222,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
     frame.castBar.Text:SetPoint('CENTER', frame.castBar, 'CENTER', 0, -16);
   end
 
-  local fontName, fontSize, fontFlags = frame.castBar.Text:GetFont();
-  frame.castBar.Text:SetFont(fontName, setupOptions.castBarFontHeight + 6, fontFlags);
+  frame.castBar.Text:SetFont('Fonts\\FRIZQT__.TTF', 16, 'OUTLINE');
 end
 
 function Addon:UpdateHealthColor(frame)
