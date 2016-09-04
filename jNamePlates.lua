@@ -8,6 +8,7 @@ local pairs = pairs;
 local CompactUnitFrame_IsTapDenied = CompactUnitFrame_IsTapDenied;
 local CreateColor = CreateColor;
 local CreateFrame = CreateFrame;
+local C_NamePlate = C_NamePlate;
 local GetUnitName = GetUnitName;
 local InCombatLockdown = InCombatLockdown;
 local ShouldShowName = ShouldShowName;
