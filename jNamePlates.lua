@@ -4,8 +4,8 @@ local AddonName, Addon = ...;
 local _G = _G;
 local select = select;
 local pairs = pairs;
-local strfind = string.find;
 
+local CompactUnitFrame_IsTapDenied = CompactUnitFrame_IsTapDenied;
 local CreateColor = CreateColor;
 local CreateFrame = CreateFrame;
 local GetUnitName = GetUnitName;
