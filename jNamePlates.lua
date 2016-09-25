@@ -217,6 +217,14 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
     frame.castBar.barBorder = self:CreateBorder(frame.castBar);
   end
 
+  -- adjust cast bar icon size and position
+  frame.castBar.Icon:SetSize(17, 17);
+  frame.castBar.Icon:ClearAllPoints();
+  frame.castBar.Icon:SetPoint('RIGHT', frame.castBar, 'LEFT', -4, 3);
+
+  -- cut the default icon border embedded in icons
+  frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9);
+
   -- when using small nameplates move the text below the casting bar
   if (not setupOptions.useLargeNameFont) then
     frame.castBar.Text:ClearAllPoints();
