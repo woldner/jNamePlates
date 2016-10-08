@@ -37,6 +37,10 @@ local ICON = {
 local NAME_FADE_VALUE = .6;
 local BAR_FADE_VALUE = .4;
 
+local NameplatePowerBarColor = NameplatePowerBarColor or {
+  ["MANA"] = { r = 0.1, g = 0.25, b = 1.00 }
+};
+
 -- helper functions
 local function IsTanking(unit)
   return select(1, UnitDetailedThreatSituation('player', unit));
@@ -181,11 +185,34 @@ do
     Addon:ApplyAlpha(frame, alpha);
   end
 
+  local function Frame_OnEvent(event, ...)
+    --
+  end
+
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
     hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha);
+
+    NamePlateDriverFrame:HookScript('OnEvent', function (frame, event, ...)
+        if event == "NAME_PLATE_UNIT_ADDED" then
+          local namePlateUnitToken = ...;
+          if (UnitIsUnit("player", namePlateUnitToken)) then
+            local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken);
+            namePlateFrameBase.UnitFrame.healthBar:SetAlpha(1);
+          end
+        end
+      end);
+
+    -- hooksecurefunc(ClassNameplateBar, 'TurnOn', function () print('to') end);
+
+    ClassNameplateManaBarFrame:HookScript('OnEvent', function (frame, event, ...)
+        if (event == "PLAYER_ENTERING_WORLD") then
+          frame:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar', 'BACKGROUND', 1);
+        end
+        frame:SetAlpha(1);
+      end);
   end
 end
 
@@ -221,6 +248,11 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   frame.castBar.Icon:SetSize(17, 17);
   frame.castBar.Icon:ClearAllPoints();
   frame.castBar.Icon:SetPoint('RIGHT', frame.castBar, 'LEFT', -4, 3);
+
+  -- adjust cast bar shield
+  frame.castBar.BorderShield:SetSize(17, 17);
+  frame.castBar.BorderShield:ClearAllPoints();
+  frame.castBar.BorderShield:SetPoint('RIGHT', frame.castBar, 'LEFT', -4, 3);
 
   -- cut the default icon border embedded in icons
   frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9);
