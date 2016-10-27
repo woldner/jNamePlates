@@ -5,10 +5,13 @@ local _G = _G;
 local select = select;
 local pairs = pairs;
 
+local AreColorsEqual = AreColorsEqual;
 local CompactUnitFrame_IsTapDenied = CompactUnitFrame_IsTapDenied;
 local CreateColor = CreateColor;
 local CreateFrame = CreateFrame;
 local C_NamePlate = C_NamePlate;
+local DefaultCompactNamePlateFriendlyFrameOptions = DefaultCompactNamePlateFriendlyFrameOptions;
+local DefaultCompactNamePlateEnemyFrameOptions = DefaultCompactNamePlateEnemyFrameOptions;
 local GetUnitName = GetUnitName;
 local InCombatLockdown = InCombatLockdown;
 local ShouldShowName = ShouldShowName;
@@ -109,7 +112,6 @@ function Addon:PLAYER_LOGIN()
   self:HookActionEvents();
 end
 
--- configuration (credits to Ketho)
 function Addon:ConfigNamePlates()
   if (not InCombatLockdown()) then
     -- set distance back to 40 (down from 60)
@@ -129,41 +131,6 @@ function Addon:ConfigNamePlates()
     -- Prevent nameplates from getting smaller when you move away
     SetCVar('nameplateMaxScale', 1);
     SetCVar('nameplateMinScale', 1);
-
-    -- enable class colors on friendly nameplates
-    DefaultCompactNamePlateFriendlyFrameOptions.useClassColors = true;
-
-    -- set the selected border color on friendly nameplates
-    DefaultCompactNamePlateFriendlyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
-    DefaultCompactNamePlateFriendlyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
-    DefaultCompactNamePlateFriendlyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
-
-    -- disable the classification indicator on nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.showClassificationIndicator = false;
-
-    -- set the selected border color on enemy nameplates
-    DefaultCompactNamePlateEnemyFrameOptions.selectedBorderColor = CreateColor(0, 0, 0, 1);
-    DefaultCompactNamePlateEnemyFrameOptions.tankBorderColor = CreateColor(0, 0, 0, 1);
-    DefaultCompactNamePlateEnemyFrameOptions.defaultBorderColor = CreateColor(0, 0, 0, 1);
-
-    -- override any enabled cvar
-    C_Timer.After(.1, function ()
-        -- disable class colors on enemy nameplates
-        DefaultCompactNamePlateEnemyFrameOptions.useClassColors = false;
-      end)
-
-    -- always show names on nameplates
-    for _, i in pairs({
-        'Friendly',
-        'Enemy'
-      }) do
-      for _, j in pairs({
-          'displayNameWhenSelected',
-          'displayNameByPlayerNameRules'
-        }) do
-        _G['DefaultCompactNamePlate'..i..'FrameOptions'][j] = false;
-      end
-    end
   end
 end
 
@@ -185,34 +152,11 @@ do
     Addon:ApplyAlpha(frame, alpha);
   end
 
-  local function Frame_OnEvent(event, ...)
-    --
-  end
-
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal);
     hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor);
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName);
     hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha);
-
-    NamePlateDriverFrame:HookScript('OnEvent', function (frame, event, ...)
-        if event == "NAME_PLATE_UNIT_ADDED" then
-          local namePlateUnitToken = ...;
-          if (UnitIsUnit("player", namePlateUnitToken)) then
-            local namePlateFrameBase = C_NamePlate.GetNamePlateForUnit(namePlateUnitToken);
-            namePlateFrameBase.UnitFrame.healthBar:SetAlpha(1);
-          end
-        end
-      end);
-
-    -- hooksecurefunc(ClassNameplateBar, 'TurnOn', function () print('to') end);
-
-    ClassNameplateManaBarFrame:HookScript('OnEvent', function (frame, event, ...)
-        if (event == "PLAYER_ENTERING_WORLD") then
-          frame:SetStatusBarTexture('Interface\\TargetingFrame\\UI-StatusBar', 'BACKGROUND', 1);
-        end
-        frame:SetAlpha(1);
-      end);
   end
 end
 
@@ -225,9 +169,8 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   -- remove default health bar border
   frame.healthBar.border:Hide();
   for _, texture in pairs(frame.healthBar.border.Textures) do
-    texture:SetTexture(nil);
+    texture:Hide();
   end
-  wipe(frame.healthBar.border.Textures);
 
   -- create a new border around the health bar
   if (not frame.healthBar.barBorder) then
@@ -263,19 +206,25 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
     frame.castBar.Text:SetPoint('CENTER', frame.castBar, 'CENTER', 0, -16);
     frame.castBar.Text:SetFont('Fonts\\FRIZQT__.TTF', 16, 'OUTLINE');
   end
+
+  if (frame.classificationIndicator) then
+    frame.classificationIndicator:Hide();
+  end
 end
 
 function Addon:UpdateHealthColor(frame)
   if (UnitExists(frame.displayedUnit) and IsTanking(frame.displayedUnit)) then
     -- color of name plate of unit targeting us
-    local r, g, b = 1, .3, 1;
+    local isTankingColor = CreateColor(1, .3, 1, 1);
     if (CompactUnitFrame_IsTapDenied(frame)) then
-      r, g, b = r / 2, g / 2, b / 2;
+      isTankingColor = CreateColor(.5, .15, 5, 1);
     end
 
-    if (r ~= frame.healthBar.r or g ~= frame.healthBar.g or b ~= frame.healthBar.b) then
-      frame.healthBar:SetStatusBarColor(r, g, b);
-      frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
+    local healthBarColor = CreateColor(frame.healthBar:GetStatusBarColor());
+
+    local colorsEqual = AreColorsEqual(isTankingColor, healthBarColor);
+    if (not colorsEqual) then
+      frame.healthBar:SetStatusBarColor(isTankingColor.r, isTankingColor.g, isTankingColor.b);
     end
   end
 end
@@ -350,17 +299,23 @@ function Addon:UpdateName(frame)
       frame.healthBar:SetAlpha(1);
       ApplyCastingBarAlpha(frame.castBar, 1);
     else
-      local nameplate = C_NamePlate.GetNamePlateForUnit('target');
-      if (nameplate) then
+      local tNameplate = C_NamePlate.GetNamePlateForUnit('target');
+      if (tNameplate) then
         frame.name:SetAlpha(NAME_FADE_VALUE);
         frame.healthBar:SetAlpha(BAR_FADE_VALUE);
         if (not UnitCanAttack('player', frame.unit)) then
           ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE);
         end
 
-        nameplate.UnitFrame.name:SetAlpha(1);
-        nameplate.UnitFrame.healthBar:SetAlpha(1);
-        ApplyCastingBarAlpha(nameplate.UnitFrame.castBar, 1);
+        tNameplate.UnitFrame.name:SetAlpha(1);
+        tNameplate.UnitFrame.healthBar:SetAlpha(1);
+        ApplyCastingBarAlpha(tNameplate.UnitFrame.castBar, 1);
+
+        -- TODO tot nameplate identifier
+        local totNameplate = C_NamePlate.GetNamePlateForUnit('targetoftarget');
+        if (totNameplate) then
+          print('tot');
+        end
       else
         -- we have a target but unit has no nameplate
         -- keep casting bars faded to indicate we have a target
