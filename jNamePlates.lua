@@ -257,8 +257,13 @@ function Addon:UpdateName(frame)
         -- color enemy players name with class color
         frame.name:SetVertexColor(color.r, color.g, color.b);
       else
+        local _, class = UnitClass(frame.unit);
+        local color = CLASS_COLORS[class];
+
         -- color friendly players name white
         frame.name:SetVertexColor(1, 1, 1);
+        -- color friendly players health bar with class color
+        frame.healthBar:SetStatusBarColor(color.r, color.g, color.b);
       end
     elseif (level == -1) then
       -- set boss name text
