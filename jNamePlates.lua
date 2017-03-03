@@ -207,8 +207,8 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
     frame.castBar.Text:SetFont('Fonts\\FRIZQT__.TTF', 16, 'OUTLINE');
   end
 
-  if (frame.classificationIndicator) then
-    frame.classificationIndicator:Hide();
+  if (frame.ClassificationFrame and frame.ClassificationFrame.classificationIndicator) then
+    frame.ClassificationFrame.classificationIndicator:SetAlpha(0)
   end
 end
 
