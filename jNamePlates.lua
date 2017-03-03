@@ -214,20 +214,21 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 end
 
 function Addon:UpdateHealthColor(frame)
-  if (UnitExists(frame.displayedUnit) and IsTanking(frame.displayedUnit)) then
-    -- color of name plate of unit targeting us
-    local isTankingColor = CreateColor(1, .3, 1, 1)
-    if (CompactUnitFrame_IsTapDenied(frame)) then
-      isTankingColor = CreateColor(.5, .15, 5, 1)
+  if (UnitExists(frame.displayedUnit)) then
+    local r, g, b = frame.healthBar.r, frame.healthBar.g, frame.healthBar.b
+
+    if (IsTanking(frame.displayedUnit)) then
+      -- override color with isTanking color
+      r, g, b = 1, .3, 1
+      if (CompactUnitFrame_IsTapDenied(frame)) then
+        r, g, b = .5, .15, .5
+      end
     end
 
-    local healthBarColor = CreateColor(frame.healthBar:GetStatusBarColor())
-    print(healthBarColor.r, healthBarColor.g, healthBarColor.b)
-
-    --local colorsEqual = AreColorsEqual(isTankingColor, healthBarColor)
-    --if (not colorsEqual) then
-      --frame.healthBar:SetStatusBarColor(isTankingColor.r, isTankingColor.g, isTankingColor.b)
-    --end
+    if (frame.healthBar.r ~= r or frame.healthBar.g ~= g or frame.healthBar.b ~= b) then
+      frame.healthBar:SetStatusBarColor(r, g, b)
+      frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
+    end
   end
 end
 
