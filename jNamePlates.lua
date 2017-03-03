@@ -227,7 +227,7 @@ function Addon:UpdateHealthColor(frame)
 
     if (frame.healthBar.r ~= r or frame.healthBar.g ~= g or frame.healthBar.b ~= b) then
       frame.healthBar:SetStatusBarColor(r, g, b)
-      frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b;
+      frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b
     end
   end
 end
