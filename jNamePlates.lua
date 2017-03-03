@@ -2,7 +2,6 @@
 local AddonName, Addon = ...;
 
 local _G = _G;
-local select = select;
 local pairs = pairs;
 
 local AreColorsEqual = AreColorsEqual;
@@ -46,7 +45,8 @@ local NameplatePowerBarColor = NameplatePowerBarColor or {
 
 -- helper functions
 local function IsTanking(unit)
-  return select(1, UnitDetailedThreatSituation('player', unit));
+  local isTanking = UnitDetailedThreatSituation('player', unit);
+  return isTanking;
 end
 
 local function InCombat(unit)
@@ -54,7 +54,8 @@ local function InCombat(unit)
 end
 
 local function IsOnThreatList(unit)
-  return select(2, UnitDetailedThreatSituation('player', unit)) ~= nil;
+  local _, status = UnitDetailedThreatSituation('player', unit);
+  return status ~= nil and status ~= 0;
 end
 
 -- identical to CastingBarFrame_ApplyAlpha
