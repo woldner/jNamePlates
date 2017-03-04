@@ -4,13 +4,9 @@ local AddonName, Addon = ...
 local _G = _G
 local pairs = pairs
 
-local AreColorsEqual = AreColorsEqual
 local CompactUnitFrame_IsTapDenied = CompactUnitFrame_IsTapDenied
-local CreateColor = CreateColor
 local CreateFrame = CreateFrame
 local C_NamePlate = C_NamePlate
-local DefaultCompactNamePlateFriendlyFrameOptions = DefaultCompactNamePlateFriendlyFrameOptions
-local DefaultCompactNamePlateEnemyFrameOptions = DefaultCompactNamePlateEnemyFrameOptions
 local GetUnitName = GetUnitName
 local InCombatLockdown = InCombatLockdown
 local ShouldShowName = ShouldShowName
@@ -27,7 +23,6 @@ local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVP = UnitIsPVP
 local UnitLevel = UnitLevel
 local SetCVar = SetCVar
-local wipe = wipe
 
 -- constants
 local CLASS_COLORS = CUSTOM_CLASS_COLORS or RAID_CLASS_COLORS
@@ -215,19 +210,18 @@ end
 
 function Addon:UpdateHealthColor(frame)
   if (UnitExists(frame.displayedUnit)) then
-    local r, g, b = frame.healthBar.r, frame.healthBar.g, frame.healthBar.b
+    local r, g, b, a = frame.healthBar:GetStatusBarColor()
 
     if (IsTanking(frame.displayedUnit)) then
-      -- override color with isTanking color
-      r, g, b = 1, .3, 1
-      if (CompactUnitFrame_IsTapDenied(frame)) then
-        r, g, b = .5, .15, .5
-      end
+      r, g, b, a = 1, .3, 1, 1
+      -- if (CompactUnitFrame_IsTapDenied(frame)) then
+      --   local multiplier = .5
+      --   r, g, b, a = r * multiplier, g * multiplier, b * multiplier, a * multiplier
+      -- end
     end
 
     if (frame.healthBar.r ~= r or frame.healthBar.g ~= g or frame.healthBar.b ~= b) then
       frame.healthBar:SetStatusBarColor(r, g, b)
-      frame.healthBar.r, frame.healthBar.g, frame.healthBar.b = r, g, b
     end
   end
 end
@@ -318,12 +312,6 @@ function Addon:UpdateName(frame)
         tNameplate.UnitFrame.name:SetAlpha(1)
         tNameplate.UnitFrame.healthBar:SetAlpha(1)
         ApplyCastingBarAlpha(tNameplate.UnitFrame.castBar, 1)
-
-        -- TODO tot nameplate identifier
-        local totNameplate = C_NamePlate.GetNamePlateForUnit('targetoftarget')
-        if (totNameplate) then
-          print('tot')
-        end
       else
         -- we have a target but unit has no nameplate
         -- keep casting bars faded to indicate we have a target
