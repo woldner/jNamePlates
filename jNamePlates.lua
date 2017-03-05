@@ -4,6 +4,7 @@ local AddonName, Addon = ...
 local _G = _G
 local pairs = pairs
 
+local CastingBarFrame_ApplyAlpha = CastingBarFrame_ApplyAlpha
 local CompactUnitFrame_IsTapDenied = CompactUnitFrame_IsTapDenied
 local CreateFrame = CreateFrame
 local C_NamePlate = C_NamePlate
@@ -14,6 +15,7 @@ local UnitAffectingCombat = UnitAffectingCombat
 local UnitCanAttack = UnitCanAttack
 local UnitClass = UnitClass
 local UnitClassification = UnitClassification
+local UnitThreatSituation = UnitThreatSituation
 local UnitDetailedThreatSituation = UnitDetailedThreatSituation
 local UnitExists = UnitExists
 local UnitFactionGroup = UnitFactionGroup
@@ -22,6 +24,8 @@ local UnitIsEnemy = UnitIsEnemy
 local UnitIsPlayer = UnitIsPlayer
 local UnitIsPVP = UnitIsPVP
 local UnitLevel = UnitLevel
+local UnitReaction = UnitReaction
+local UnitSelectionColor = UnitSelectionColor
 local SetCVar = SetCVar
 
 -- constants
@@ -34,10 +38,6 @@ local ICON = {
 local NAME_FADE_VALUE = .6
 local BAR_FADE_VALUE = .4
 
-local NameplatePowerBarColor = NameplatePowerBarColor or {
-  ["MANA"] = { r = 0.1, g = 0.25, b = 1.00 }
-}
-
 -- helper functions
 local function IsTanking(unit)
   local isTanking = UnitDetailedThreatSituation('player', unit)
@@ -49,18 +49,8 @@ local function InCombat(unit)
 end
 
 local function IsOnThreatList(unit)
-  local _, status = UnitDetailedThreatSituation('player', unit)
-  return status ~= nil and status ~= 0
-end
-
--- identical to CastingBarFrame_ApplyAlpha
-local function ApplyCastingBarAlpha(frame, alpha)
-  frame:SetAlpha(alpha)
-  if (frame.additionalFadeWidgets) then
-    for widget in pairs(frame.additionalFadeWidgets) do
-      widget:SetAlpha(alpha)
-    end
-  end
+  local status = UnitThreatSituation('player', unit)
+  return status and status > 0
 end
 
 local function GetBorderBackdrop(size)
@@ -73,7 +63,7 @@ local function GetBorderBackdrop(size)
   }
 end
 
-local function AbbrClassification(classification)
+local function GetClassificationShort(classification)
   return (classification == 'elite') and '+' or
   (classification == 'minus') and '-' or
   (classification == 'rare') and 'r' or
@@ -209,20 +199,20 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 end
 
 function Addon:UpdateHealthColor(frame)
-  if (UnitExists(frame.displayedUnit)) then
-    local r, g, b, a = frame.healthBar:GetStatusBarColor()
+  if (UnitCanAttack('player', frame.unit)) then
+    local r, g, b
 
     if (IsTanking(frame.displayedUnit)) then
-      r, g, b, a = 1, .3, 1, 1
-      -- if (CompactUnitFrame_IsTapDenied(frame)) then
-      --   local multiplier = .5
-      --   r, g, b, a = r * multiplier, g * multiplier, b * multiplier, a * multiplier
-      -- end
+      r, g, b = 1, .3, 1
+
+      if (CompactUnitFrame_IsTapDenied(frame)) then
+        r, g, b = .5, .15, .5
+      end
+    else
+      r, g, b = UnitSelectionColor(frame.unit)
     end
 
-    if (frame.healthBar.r ~= r or frame.healthBar.g ~= g or frame.healthBar.b ~= b) then
-      frame.healthBar:SetStatusBarColor(r, g, b)
-    end
+    frame.healthBar:SetStatusBarColor(r, g, b)
   end
 end
 
@@ -231,7 +221,7 @@ function Addon:UpdateName(frame)
     local level = UnitLevel(frame.unit)
     local name = GetUnitName(frame.unit, false)
     local classification = UnitClassification(frame.unit)
-    local classificationAbbr = AbbrClassification(classification)
+    local classificationShort = GetClassificationShort(classification)
 
     if (UnitIsPlayer(frame.unit)) then
       local isPVP = UnitIsPVP(frame.unit)
@@ -281,9 +271,9 @@ function Addon:UpdateName(frame)
     else
       -- set name text
       if (InCombat(frame.unit)) then
-        frame.name:SetText(classificationAbbr and name..' ('..level..classificationAbbr..') **' or name..' ('..level..') **')
+        frame.name:SetText(classificationShort and name..' ('..level..classificationShort..') **' or name..' ('..level..') **')
       else
-        frame.name:SetText(classificationAbbr and name..' ('..level..classificationAbbr..')' or name..' ('..level..')')
+        frame.name:SetText(classificationShort and name..' ('..level..classificationShort..')' or name..' ('..level..')')
       end
 
       -- set name color
@@ -299,26 +289,26 @@ function Addon:UpdateName(frame)
     if (UnitGUID('target') == nil) then
       frame.name:SetAlpha(1)
       frame.healthBar:SetAlpha(1)
-      ApplyCastingBarAlpha(frame.castBar, 1)
+      CastingBarFrame_ApplyAlpha(frame.castBar, 1)
     else
       local tNameplate = C_NamePlate.GetNamePlateForUnit('target')
       if (tNameplate) then
         frame.name:SetAlpha(NAME_FADE_VALUE)
         frame.healthBar:SetAlpha(BAR_FADE_VALUE)
         if (not UnitCanAttack('player', frame.unit)) then
-          ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE)
+          CastingBarFrame_ApplyAlpha(frame.castBar, BAR_FADE_VALUE)
         end
 
         tNameplate.UnitFrame.name:SetAlpha(1)
         tNameplate.UnitFrame.healthBar:SetAlpha(1)
-        ApplyCastingBarAlpha(tNameplate.UnitFrame.castBar, 1)
+        CastingBarFrame_ApplyAlpha(tNameplate.UnitFrame.castBar, 1)
       else
         -- we have a target but unit has no nameplate
         -- keep casting bars faded to indicate we have a target
         frame.name:SetAlpha(NAME_FADE_VALUE)
         frame.healthBar:SetAlpha(BAR_FADE_VALUE)
         if (not UnitCanAttack('player', frame.unit)) then
-          ApplyCastingBarAlpha(frame.castBar, BAR_FADE_VALUE)
+          CastingBarFrame_ApplyAlpha(frame.castBar, BAR_FADE_VALUE)
         end
       end
     end
@@ -335,7 +325,7 @@ function Addon:ApplyAlpha(frame, alpha)
       -- frame is faded
       if (healthBarAlpha == BAR_FADE_VALUE) then
         local value = alpha * BAR_FADE_VALUE
-        ApplyCastingBarAlpha(frame, value)
+        CastingBarFrame_ApplyAlpha(frame, value)
       end
     end
   end
