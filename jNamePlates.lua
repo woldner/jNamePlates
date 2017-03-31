@@ -126,10 +126,6 @@ do
     Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   end
 
-  local function Frame_UpdateHealthColor(frame)
-    Addon:UpdateHealthColor(frame)
-  end
-
   local function Frame_UpdateName(frame)
     Addon:UpdateName(frame)
   end
@@ -140,7 +136,6 @@ do
 
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal)
-    hooksecurefunc('CompactUnitFrame_UpdateHealthColor', Frame_UpdateHealthColor)
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName)
     hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha)
   end
@@ -195,24 +190,6 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 
   if (frame.ClassificationFrame and frame.ClassificationFrame.classificationIndicator) then
     frame.ClassificationFrame.classificationIndicator:SetAlpha(0)
-  end
-end
-
-function Addon:UpdateHealthColor(frame)
-  if (UnitCanAttack('player', frame.unit)) then
-    local r, g, b
-
-    if (IsTanking(frame.displayedUnit)) then
-      r, g, b = 1, .3, 1
-
-      if (CompactUnitFrame_IsTapDenied(frame)) then
-        r, g, b = .5, .15, .5
-      end
-    else
-      r, g, b = UnitSelectionColor(frame.unit)
-    end
-
-    frame.healthBar:SetStatusBarColor(r, g, b)
   end
 end
 
