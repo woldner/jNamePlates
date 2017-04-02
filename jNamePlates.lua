@@ -173,15 +173,18 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
     frame.castBar.barBorder = self:CreateBorder(frame.castBar)
   end
 
+  -- get the current nameplate bar height
+  local barHeight = frame.castBar:GetHeight()
+
   -- adjust cast bar icon size and position
-  frame.castBar.Icon:SetSize(17, 17)
+  frame.castBar.Icon:SetSize(barHeight, barHeight)
   frame.castBar.Icon:ClearAllPoints()
-  frame.castBar.Icon:SetPoint('RIGHT', frame.castBar, 'LEFT', -4, 3)
+  frame.castBar.Icon:SetPoint('RIGHT', frame.castBar, 'LEFT', -5, 0)
 
   -- adjust cast bar shield
-  frame.castBar.BorderShield:SetSize(17, 17)
+  frame.castBar.BorderShield:SetSize(barHeight, barHeight)
   frame.castBar.BorderShield:ClearAllPoints()
-  frame.castBar.BorderShield:SetPoint('RIGHT', frame.castBar, 'LEFT', -4, 3)
+  frame.castBar.BorderShield:SetPoint('RIGHT', frame.castBar, 'LEFT', -5, 0)
 
   -- cut the default icon border embedded in icons
   frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9)
