@@ -142,6 +142,11 @@ do
 end
 
 function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
+  local _, instanceType = GetInstanceInfo()
+  if (instanceType == 'party' or instanceType == 'raid') then
+    return
+  end
+
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar')
   frame.healthBar.background:SetVertexColor(0, 0, 0, .5)
@@ -194,6 +199,11 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 end
 
 function Addon:UpdateName(frame)
+  local _, instanceType = GetInstanceInfo()
+  if (instanceType == 'party' or instanceType == 'raid') then
+    return
+  end
+
   if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
     local level = UnitLevel(frame.unit)
     local name = GetUnitName(frame.unit, false)
