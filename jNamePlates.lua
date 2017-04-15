@@ -167,6 +167,7 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   end
 
   frame.castBar.Icon:ClearAllPoints()
+
   if (setupOptions.useLargeNameFont) then
     -- get nameplate cast bar height
     local barHeight = frame.castBar:GetHeight()
