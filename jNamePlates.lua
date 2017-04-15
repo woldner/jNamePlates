@@ -130,22 +130,15 @@ do
     Addon:UpdateName(frame)
   end
 
-  local function Frame_ApplyAlpha(frame, alpha)
-    Addon:ApplyAlpha(frame, alpha)
-  end
-
   function Addon:HookActionEvents()
     hooksecurefunc('DefaultCompactNamePlateFrameSetupInternal', Frame_SetupNamePlateInternal)
     hooksecurefunc('CompactUnitFrame_UpdateName', Frame_UpdateName)
-    hooksecurefunc('CastingBarFrame_ApplyAlpha', Frame_ApplyAlpha)
   end
 end
 
 function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
   local _, instanceType = GetInstanceInfo()
-  if (instanceType == 'party' or instanceType == 'raid') then
-    return
-  end
+  if (instanceType == 'party' or instanceType == 'raid') then return end
 
   -- set bar color and textures for health bar
   frame.healthBar.background:SetTexture('Interface\\TargetingFrame\\UI-StatusBar')
@@ -173,18 +166,49 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
     frame.castBar.barBorder = self:CreateBorder(frame.castBar)
   end
 
-  -- get the current nameplate bar height
-  local barHeight = frame.castBar:GetHeight()
-
-  -- adjust cast bar icon size and position
-  frame.castBar.Icon:SetSize(barHeight, barHeight)
   frame.castBar.Icon:ClearAllPoints()
-  frame.castBar.Icon:SetPoint('RIGHT', frame.castBar, 'LEFT', -5, 0)
+  if (setupOptions.useLargeNameFont) then
+    -- get nameplate cast bar height
+    local barHeight = frame.castBar:GetHeight()
 
-  -- adjust cast bar shield
-  frame.castBar.BorderShield:SetSize(barHeight, barHeight)
-  frame.castBar.BorderShield:ClearAllPoints()
-  frame.castBar.BorderShield:SetPoint('RIGHT', frame.castBar, 'LEFT', -5, 0)
+    -- adjust cast bar icon size and position
+    frame.castBar.Icon:SetSize(barHeight, barHeight)
+    frame.castBar.Icon:ClearAllPoints()
+    frame.castBar.Icon:SetPoint('RIGHT', frame.castBar, 'LEFT', -5, 0)
+
+    -- adjust cast bar shield
+    frame.castBar.BorderShield:SetSize(barHeight, barHeight)
+    frame.castBar.BorderShield:ClearAllPoints()
+    frame.castBar.BorderShield:SetPoint('RIGHT', frame.castBar, 'LEFT', -5, 0)
+  else
+    -- get nameplate health bar height
+    local oldHealthBarHeight = frame.healthBar:GetHeight()
+
+    -- increase nameplate health bar height by 2 px
+    local healthBarHeight = oldHealthBarHeight + 2
+    frame.healthBar:SetHeight(healthBarHeight)
+
+    -- get nameplate cast bar height
+    local castBarHeight = frame.castBar:GetHeight()
+
+    -- calculate total height
+    local totalHeight = healthBarHeight + castBarHeight + 2
+
+    -- adjust cast bar icon size and position
+    frame.castBar.Icon:SetSize(totalHeight, totalHeight)
+    frame.castBar.Icon:ClearAllPoints()
+    frame.castBar.Icon:SetPoint('TOPRIGHT', frame.healthBar, 'TOPLEFT', -5, 0)
+
+    -- adjust cast bar shield
+    frame.castBar.BorderShield:SetSize(totalHeight, totalHeight)
+    frame.castBar.BorderShield:ClearAllPoints()
+    frame.castBar.BorderShield:SetPoint('TOPRIGHT', frame.healthBar, 'TOPLEFT', -5, 0)
+
+    -- when using small nameplates move the text below the casting bar
+    frame.castBar.Text:ClearAllPoints()
+    frame.castBar.Text:SetPoint('CENTER', frame.castBar, 'CENTER', 0, -16)
+    frame.castBar.Text:SetFont('Fonts\\FRIZQT__.TTF', 16, 'OUTLINE')
+  end
 
   -- cut the default icon border embedded in icons
   frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9)
@@ -203,9 +227,7 @@ end
 
 function Addon:UpdateName(frame)
   local _, instanceType = GetInstanceInfo()
-  if (instanceType == 'party' or instanceType == 'raid') then
-    return
-  end
+  if (instanceType == 'party' or instanceType == 'raid') then return end
 
   if (ShouldShowName(frame) and frame.optionTable.colorNameBySelection) then
     local level = UnitLevel(frame.unit)
@@ -300,22 +322,6 @@ function Addon:UpdateName(frame)
         if (not UnitCanAttack('player', frame.unit)) then
           CastingBarFrame_ApplyAlpha(frame.castBar, BAR_FADE_VALUE)
         end
-      end
-    end
-  end
-end
-
-function Addon:ApplyAlpha(frame, alpha)
-  if (not UnitCanAttack('player', frame.unit)) then
-    local parent = frame:GetParent()
-
-    if (parent.healthBar) then
-      local healthBarAlpha = parent.healthBar:GetAlpha()
-
-      -- frame is faded
-      if (healthBarAlpha == BAR_FADE_VALUE) then
-        local value = alpha * BAR_FADE_VALUE
-        CastingBarFrame_ApplyAlpha(frame, value)
       end
     end
   end
