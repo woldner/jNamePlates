@@ -168,6 +168,9 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
 
   frame.castBar.Icon:ClearAllPoints()
 
+  -- cut the default icon border embedded in icons
+  frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9)
+
   if (setupOptions.useLargeNameFont) then
     -- get nameplate cast bar height
     local barHeight = frame.castBar:GetHeight()
@@ -206,16 +209,6 @@ function Addon:SetupNamePlateInternal(frame, setupOptions, frameOptions)
     frame.castBar.BorderShield:SetPoint('TOPRIGHT', frame.healthBar, 'TOPLEFT', -5, 0)
 
     -- when using small nameplates move the text below the casting bar
-    frame.castBar.Text:ClearAllPoints()
-    frame.castBar.Text:SetPoint('CENTER', frame.castBar, 'CENTER', 0, -16)
-    frame.castBar.Text:SetFont('Fonts\\FRIZQT__.TTF', 16, 'OUTLINE')
-  end
-
-  -- cut the default icon border embedded in icons
-  frame.castBar.Icon:SetTexCoord(.1, .9, .1, .9)
-
-  -- when using small nameplates move the text below the casting bar
-  if (not setupOptions.useLargeNameFont) then
     frame.castBar.Text:ClearAllPoints()
     frame.castBar.Text:SetPoint('CENTER', frame.castBar, 'CENTER', 0, -16)
     frame.castBar.Text:SetFont('Fonts\\FRIZQT__.TTF', 16, 'OUTLINE')
