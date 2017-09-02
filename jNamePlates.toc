@@ -1,7 +1,7 @@
-## Interface: 70200
+## Interface: 70300
 ## Title: jNamePlates
-## Notes: Color the name plate of unit targeting us
-## Version: 1.3
+## Notes: Modify original name plates outside dungeons/raids
+## Version: 1.4
 ## Author: jwldnr
 
 jNamePlates.lua
